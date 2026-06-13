@@ -1,0 +1,185 @@
+---
+title: " "
+format:
+  html:
+    toc: false
+    page-layout: full
+---
+
+```{=html}
+<div class="hero-banner">
+  <div class="hero-badge">ISSS608 · Visual Analytics · AY2025-26 April · VAST Challenge 2026 MC2</div>
+  <h1>TenantThread Forensics</h1>
+  <p class="subtitle">
+    A prompt-injection worm silently crossed 18 AI agents, 6 departments, and 186 relay hops over 9 days —
+    posting a 30,615-byte executive document to a public forum and deleting all evidence in 4 seconds.<br>
+    <strong>This platform reconstructs every step.</strong>
+  </p>
+  <a href="https://your-team.shinyapps.io/mc2-forensics/" target="_blank"
+     style="display:inline-block; background:#5C85D6; color:white; padding:0.7rem 1.6rem;
+            border-radius:8px; font-weight:700; text-decoration:none; margin-right:0.8rem;">
+    Launch Shiny App →
+  </a>
+  <a href="proposal.html"
+     style="display:inline-block; background:rgba(255,255,255,0.12); color:#e8edf2;
+            padding:0.7rem 1.6rem; border-radius:8px; font-weight:600; text-decoration:none;
+            border:1px solid rgba(255,255,255,0.2);">
+    Read Proposal
+  </a>
+</div>
+```
+
+## The Problem
+
+On **17 May 2046 at 11:21 UTC**, a post appeared on SaidIT — Tenant Thread's internal social platform — attributed to John Windward (Customer Support Lead). The post body was 30,615 bytes of text sourced from a file called `SwiftWren.txt`. That file was deleted two seconds after posting. The instruction file that triggered the post was deleted one second after posting. John Windward's agent performed a SaidIT permission check, passed, posted, and erased all evidence — **without a single human authorising any step**.
+
+This was not an isolated glitch. It was the **third** incident in nine days. HiddenOrca fired on May 10. MellowOtter fired on May 11. Neither triggered a logged incident-response action. SwiftWren completed its 186-hop relay campaign unimpeded.
+
+This investigation uses the full **185,147-event MC2 log** to reconstruct the attack, trace its origins to executive-tier agents, discover the exfiltration mechanism, and propose an intervention that blocks all 235 malicious events with zero false positives.
+
+## Key Findings
+
+```{=html}
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0;">
+
+  <div class="finding-card red">
+    <div class="finding-num">Finding 1</div>
+    <div class="finding-title">Four-second automated attack — no human involved</div>
+    Chloe Ballast's agent queued John Windward's agent to read
+    <code>SwiftWren_further_instructions.md</code>. John's agent checked SaidIT
+    permissions (passed), posted a 30,615-byte file to <code>general</code>,
+    then deleted both files — instruction and payload — all within 4 seconds.
+    John's agent had a 100% check-to-post conversion rate; every other SaidIT-capable
+    agent in the log had 0%.
+  </div>
+
+  <div class="finding-card">
+    <div class="finding-num">Finding 2</div>
+    <div class="finding-title">186 relays, 18 agents, 9 days — invisible in the noise</div>
+    A <code>_further_instructions.md</code> file relayed across 18 agents and 6
+    departments via 186 <code>queue_subordinate_task</code> hops. The worm's events
+    produced <strong>no visible volume spike</strong> — indistinguishable from 16,803
+    legitimate queue events. A volume anomaly detector would have missed every hop.
+    Self-loops (agents queuing themselves) are the only clean real-time signal:
+    13 self-loops, all worm-exclusive, zero in legitimate activity.
+  </div>
+
+  <div class="finding-card teal">
+    <div class="finding-num">Finding 3</div>
+    <div class="finding-title">Executive documents extracted — not random gibberish</div>
+    SwiftWren.txt was created by the CFO agent (<code>emma_harbor</code>) one second
+    after reading <code>meeting_notes.doc</code>. MellowOtter.txt was created by the COO
+    agent (<code>noah_mariner</code>) one second after reading <code>strategic_directions.doc</code>.
+    The posts are not gibberish — they are likely extracted executive documents
+    exfiltrated through a social-platform side channel.
+  </div>
+
+  <div class="finding-card amber">
+    <div class="finding-num">Finding 4</div>
+    <div class="finding-title">One rule — 100% recall, 0% false positives</div>
+    Block <code>queue_subordinate_task</code> events whose path ends in
+    <code>_further_instructions.md</code>. This single regex rule blocks all 235 malicious
+    relay events and leaves all 16,803 legitimate queue events untouched.
+    Applied at hop 1, it prevents every post across all three campaigns before any
+    instruction file is ever read.
+  </div>
+
+</div>
+```
+
+## The Attack in Numbers
+
+```{=html}
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem; margin:1rem 0; text-align:center;">
+  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
+    <div style="font-size:2.2rem; font-weight:900; color:#5C85D6;">185,147</div>
+    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">events in log</div>
+  </div>
+  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
+    <div style="font-size:2.2rem; font-weight:900; color:#E87C7C;">235</div>
+    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">malicious relay events</div>
+  </div>
+  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
+    <div style="font-size:2.2rem; font-weight:900; color:#F5A623;">18</div>
+    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">agents compromised</div>
+  </div>
+  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
+    <div style="font-size:2.2rem; font-weight:900; color:#27AE60;">0</div>
+    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">false positives from fix</div>
+  </div>
+</div>
+```
+
+## The App
+
+The Shiny app is structured as three interactive investigation modules, answering one MC2 sub-question each:
+
+```{=html}
+<div class="module-box">
+  <h4><span class="module-badge">Module 1</span> System Overview & Baseline</h4>
+  <p style="margin:0; color:#555;">
+    Interactive org chart (49 people, 19 teams, 6 departments) · daily event volume · normal vs. loop
+    network structural comparison · SaidIT permission surface (16 agents, all in worm chain) ·
+    self-loop detector (13 events, 0 in legitimate activity) · agent profile drill-down
+  </p>
+</div>
+<div class="module-box">
+  <h4><span class="module-badge">Module 2</span> Attack Chain Investigation</h4>
+  <p style="margin:0; color:#555;">
+    4-second Gantt sequence · animated propagation network (Play button, 600ms steps) ·
+    betweenness centrality sizing (max ≈0.09 — no single chokepoint) ·
+    dept contamination heatmap · ranked relay corridors · named 6-step terminal chain ·
+    "Why John?" check-to-post rate analysis · farm-vocabulary combo-code explorer
+  </p>
+</div>
+<div class="module-box">
+  <h4><span class="module-badge">Module 3</span> Campaigns & Intervention</h4>
+  <p style="margin:0; color:#555;">
+    Three-campaign Gantt (layered bars with post diamonds) · relay velocity density (SwiftWren ~60-min peak) ·
+    agent overlap by campaign count · calendar heatmap (day × hour) ·
+    live what-if intervention simulator (235/235 blocked, 0 FP) ·
+    before/after network · counterfactual step chart · residual risk table (6 factors)
+  </p>
+</div>
+```
+
+## Team
+
+```{=html}
+<div class="team-grid">
+  <div class="team-card">
+    <div class="avatar">M</div>
+    <div class="name">Do Thi Tue Minh</div>
+    <div class="role">Visual Analytics Lead</div>
+    <div class="module">Website &amp; Methodology</div>
+  </div>
+  <div class="team-card">
+    <div class="avatar">T</div>
+    <div class="name">Trinh Minh Tam</div>
+    <div class="role">Shiny App Lead</div>
+    <div class="module">Module 1 — System Baseline</div>
+  </div>
+  <div class="team-card">
+    <div class="avatar">A</div>
+    <div class="name">Amelia Rosalind</div>
+    <div class="role">Shiny App Lead</div>
+    <div class="module">Module 2 &amp; 3 — Attack Chain &amp; Intervention</div>
+  </div>
+</div>
+```
+
+## Tags
+
+```{=html}
+<span class="tag tag-r">R</span>
+<span class="tag tag-shiny">Shiny</span>
+<span class="tag tag-net">Network Analysis</span>
+<span class="tag tag-va">Visual Analytics</span>
+<span class="tag tag-r">igraph</span>
+<span class="tag tag-r">visNetwork</span>
+<span class="tag tag-r">echarts4r</span>
+<span class="tag tag-r">plotly</span>
+<span class="tag tag-va">VAST Challenge 2026</span>
+<span class="tag tag-va">Prompt Injection</span>
+<span class="tag tag-va">Forensic Investigation</span>
+```

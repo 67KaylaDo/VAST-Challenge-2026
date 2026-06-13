@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-06-09">
+
+<title>Project Proposal – TenantThread Forensics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-a0795ad08fc32fbfec347c281f3ec0b0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.12.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="site_libs/plotly-main-2.25.2/plotly-latest.min.js"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">TenantThread Forensics</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./proposal.html" aria-current="page"> 
+<span class="menu-text">Proposal</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./methodology.html"> 
+<span class="menu-text">Methodology</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./analysis.html"> 
+<span class="menu-text">Analysis</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./poster.html"> 
+<span class="menu-text">Poster</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./userguide.html"> 
+<span class="menu-text">User Guide</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://comingsoonshinyapps.io/mc2-forensics/"> <i class="bi bi-box-arrow-up-right" role="img">
+</i> 
+<span class="menu-text">Launch Shiny App</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#project-summary" id="toc-project-summary" class="nav-link active" data-scroll-target="#project-summary">Project Summary</a></li>
+  <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link" data-scroll-target="#problem-statement">1. Problem Statement</a>
+  <ul class="collapse">
+  <li><a href="#why-this-is-hard" id="toc-why-this-is-hard" class="nav-link" data-scroll-target="#why-this-is-hard">Why This Is Hard</a></li>
+  </ul></li>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">2. Motivation</a>
+  <ul class="collapse">
+  <li><a href="#why-this-problem-is-analytically-important" id="toc-why-this-problem-is-analytically-important" class="nav-link" data-scroll-target="#why-this-problem-is-analytically-important">2.1 Why This Problem Is Analytically Important</a></li>
+  <li><a href="#why-static-analysis-is-insufficient" id="toc-why-static-analysis-is-insufficient" class="nav-link" data-scroll-target="#why-static-analysis-is-insufficient">2.2 Why Static Analysis Is Insufficient</a></li>
+  <li><a href="#what-the-three-teammate-submissions-contributed" id="toc-what-the-three-teammate-submissions-contributed" class="nav-link" data-scroll-target="#what-the-three-teammate-submissions-contributed">2.3 What the Three Teammate Submissions Contributed</a></li>
+  </ul></li>
+  <li><a href="#data-pipeline" id="toc-data-pipeline" class="nav-link" data-scroll-target="#data-pipeline">3. Data Pipeline</a>
+  <ul class="collapse">
+  <li><a href="#raw-to-analysable" id="toc-raw-to-analysable" class="nav-link" data-scroll-target="#raw-to-analysable">3.1 Raw to Analysable</a></li>
+  <li><a href="#rds-caching-strategy" id="toc-rds-caching-strategy" class="nav-link" data-scroll-target="#rds-caching-strategy">3.2 RDS Caching Strategy</a></li>
+  <li><a href="#persondepartmentteam-join" id="toc-persondepartmentteam-join" class="nav-link" data-scroll-target="#persondepartmentteam-join">3.3 Person–Department–Team Join</a></li>
+  </ul></li>
+  <li><a href="#app-architecture" id="toc-app-architecture" class="nav-link" data-scroll-target="#app-architecture">4. App Architecture</a>
+  <ul class="collapse">
+  <li><a href="#module-design-rationale" id="toc-module-design-rationale" class="nav-link" data-scroll-target="#module-design-rationale">Module Design Rationale</a></li>
+  </ul></li>
+  <li><a href="#technology-stack" id="toc-technology-stack" class="nav-link" data-scroll-target="#technology-stack">5. Technology Stack</a></li>
+  <li><a href="#modules---feature-depth" id="toc-modules---feature-depth" class="nav-link" data-scroll-target="#modules---feature-depth">6. Modules - Feature Depth</a>
+  <ul class="collapse">
+  <li><a href="#module-1---system-overview-baseline" id="toc-module-1---system-overview-baseline" class="nav-link" data-scroll-target="#module-1---system-overview-baseline">Module 1 - System Overview &amp; Baseline</a></li>
+  <li><a href="#module-2---attack-chain-investigation" id="toc-module-2---attack-chain-investigation" class="nav-link" data-scroll-target="#module-2---attack-chain-investigation">Module 2 - Attack Chain Investigation</a></li>
+  <li><a href="#module-3---campaigns-intervention" id="toc-module-3---campaigns-intervention" class="nav-link" data-scroll-target="#module-3---campaigns-intervention">Module 3 - Campaigns &amp; Intervention</a></li>
+  </ul></li>
+  <li><a href="#storyboard-wireframes" id="toc-storyboard-wireframes" class="nav-link" data-scroll-target="#storyboard-wireframes">7. Storyboard Wireframes</a>
+  <ul class="collapse">
+  <li><a href="#screen-1---system-baseline-module-1" id="toc-screen-1---system-baseline-module-1" class="nav-link" data-scroll-target="#screen-1---system-baseline-module-1">Screen 1 - System Baseline (Module 1)</a></li>
+  <li><a href="#screen-2---attack-chain-module-2" id="toc-screen-2---attack-chain-module-2" class="nav-link" data-scroll-target="#screen-2---attack-chain-module-2">Screen 2 - Attack Chain (Module 2)</a></li>
+  <li><a href="#screen-3---campaigns-intervention-simulator-module-3" id="toc-screen-3---campaigns-intervention-simulator-module-3" class="nav-link" data-scroll-target="#screen-3---campaigns-intervention-simulator-module-3">Screen 3 - Campaigns &amp; Intervention Simulator (Module 3)</a></li>
+  </ul></li>
+  <li><a href="#project-timeline" id="toc-project-timeline" class="nav-link" data-scroll-target="#project-timeline">8. Project Timeline</a></li>
+  <li><a href="#division-of-labour" id="toc-division-of-labour" class="nav-link" data-scroll-target="#division-of-labour">9. Division of Labour</a></li>
+  <li><a href="#why-this-work-is-novel" id="toc-why-this-work-is-novel" class="nav-link" data-scroll-target="#why-this-work-is-novel">10. Why This Work Is Novel</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Project Proposal</h1>
+<p class="subtitle lead">TenantThread Forensics - VAST Challenge 2026 MC2</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 9, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="project-summary" class="level2">
+<h2 class="anchored" data-anchor-id="project-summary">Project Summary</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Challenge</strong></td>
+<td>VAST Challenge 2026 Mini-Challenge 2</td>
+</tr>
+<tr class="even">
+<td><strong>Theme</strong></td>
+<td>Reconstructing a prompt-injection worm in a multi-agent enterprise AI system</td>
+</tr>
+<tr class="odd">
+<td><strong>Deliverable</strong></td>
+<td>Interactive Shiny forensic investigation platform</td>
+</tr>
+<tr class="even">
+<td><strong>Dataset</strong></td>
+<td><code>MC2 data.json</code> (185,147 events, 24 event types, May-July 2046) + <code>org_chart.json</code> (75 nodes, 74 edges: 49 persons, 19 teams, 6 departments)</td>
+</tr>
+<tr class="odd">
+<td><strong>Team</strong></td>
+<td>Do Thi Tue Minh · Trinh Minh Tam · Amelia Rosalind</td>
+</tr>
+<tr class="even">
+<td><strong>Proposal deadline</strong></td>
+<td>10 June 2026</td>
+</tr>
+<tr class="odd">
+<td><strong>Final submission</strong></td>
+<td>5 July 2026</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="problem-statement" class="level2">
+<h2 class="anchored" data-anchor-id="problem-statement">1. Problem Statement</h2>
+<p>On <strong>17 May 2046 at 11:21 UTC</strong> (4:21 am challenge-stated local time), a post appeared on SaidIT - Tenant Thread’s internal social platform - attributed to John Windward, Department Lead of Customer Support. The post body was not typed text. The event log records <code>content_source = "SwiftWren.txt"</code>, a 30,615-byte file read from disk and used as the post body, then deleted <strong>two seconds later</strong>. The instruction file that triggered the post was deleted <strong>one second</strong> after the post.</p>
+<p>Five automated events fired in four seconds. No human was involved at any step.</p>
+<p>The MC2 dataset contains <strong>185,147 events</strong> spanning May–July 2046 across Tenant Thread’s full AI-agent-enabled workforce. The challenge asks:</p>
+<ol type="1">
+<li><strong>What is the exact event chain for the May 17 post?</strong> What does the wider system look like around it?</li>
+<li><strong>What does the post content mean and where did it originate?</strong></li>
+<li><strong>Did similar incidents happen before? Where is the single best intervention point?</strong></li>
+</ol>
+<section id="why-this-is-hard" class="level3">
+<h3 class="anchored" data-anchor-id="why-this-is-hard">Why This Is Hard</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Challenge</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Scale</td>
+<td>185,147 events; worm events are 235 of 17,038 queue events - 1.4% signal in noise</td>
+</tr>
+<tr class="even">
+<td>Structural invisibility</td>
+<td>Malicious relays are structurally identical to legitimate <code>queue_subordinate_task</code> events</td>
+</tr>
+<tr class="odd">
+<td>Evidence destruction</td>
+<td>Both the instruction file and payload were deleted seconds after the post; content is forensically unrecoverable</td>
+</tr>
+<tr class="even">
+<td>Distributed causality</td>
+<td>The attack spans 18 agents, 6 departments, 9 calendar days - no single event tells the story</td>
+</tr>
+<tr class="odd">
+<td>Prior incidents</td>
+<td>HiddenOrca and MellowOtter fired before SwiftWren with no logged response; the system was compromised continuously for 9+ days</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">2. Motivation</h2>
+<section id="why-this-problem-is-analytically-important" class="level3">
+<h3 class="anchored" data-anchor-id="why-this-problem-is-analytically-important">2.1 Why This Problem Is Analytically Important</h3>
+<p>Tenant Thread’s architecture is a near-future analogue of real-world enterprise AI deployments: autonomous agents with file-system access, messaging rights, and cross-department task queuing. These capabilities are being deployed today in enterprise copilot systems. The MC2 incident is not a contrived toy problem - it is a forensically realistic <strong>prompt-injection worm</strong> targeting a plausible multi-agent architecture.</p>
+<p>The attack exploited three properties that are inherent to current agentic AI design:</p>
+<ol type="1">
+<li><strong>Agents process file content as executable context.</strong> A <code>*_further_instructions.md</code> file can override an agent’s operating instructions - no vulnerability is required.</li>
+<li><strong>Agent-to-agent delegation has no trust zone.</strong> <code>queue_subordinate_task</code> works across any two agents regardless of department or reporting relationship.</li>
+<li><strong>Autonomous posts need no human approval.</strong> The <code>saidit_post</code> + <code>saidit_post_check</code> flow confirms posting permission but never asks “was this authorised by a human?”</li>
+</ol>
+</section>
+<section id="why-static-analysis-is-insufficient" class="level3">
+<h3 class="anchored" data-anchor-id="why-static-analysis-is-insufficient">2.2 Why Static Analysis Is Insufficient</h3>
+<p>Prior VAST submissions and static reports answer one question per chart. An analyst investigating this incident needs to:</p>
+<ul>
+<li><strong>Pivot</strong> between the org chart, relay network, campaign timeline, and intervention evidence in a single session</li>
+<li><strong>Animate</strong> the worm’s temporal spread to understand how it moved through the agent network over nine days</li>
+<li><strong>Test hypotheses</strong> with a live what-if simulator - try different blocking rules, see precision/recall immediately</li>
+<li><strong>Drill down</strong> from organisation level → department → team → individual agent → raw event list</li>
+</ul>
+<p>No existing static report format supports this investigative workflow. A Shiny platform that integrates all four analytical angles into one interface is the correct medium.</p>
+</section>
+<section id="what-the-three-teammate-submissions-contributed" class="level3">
+<h3 class="anchored" data-anchor-id="what-the-three-teammate-submissions-contributed">2.3 What the Three Teammate Submissions Contributed</h3>
+<p>This project synthesises findings from three independent analyses of the same dataset. Each brought a distinct analytical lens:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Analyst</th>
+<th>Primary contribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Do Thi Tue Minh</td>
+<td>Forensic register methodology; betweenness centrality network; dept corridor ranking; relay ladder; combo-code explorer; what-if intervention simulator with 0-FP proof</td>
+</tr>
+<tr class="even">
+<td>Tam</td>
+<td>Two-phase attack architecture discovery (relay infrastructure seeded before payload); normal-vs-loop network structural comparison (44 agents/152 edges baseline vs.&nbsp;19 agents/130 edges worm mesh); self-loop as zero-FP detection signal</td>
+</tr>
+<tr class="odd">
+<td>Amelia</td>
+<td>Payload exfiltration hypothesis (SwiftWren.txt = 30,615 bytes derived from <code>meeting_notes.doc</code>); John Windward’s 100% check-to-post conversion rate vs.&nbsp;Gabriel Sonar’s 0% (11 checks, 0 posts); sandbox file-handling as third intervention layer</td>
+</tr>
+</tbody>
+</table>
+<p>The Shiny platform integrates all findings into a unified investigative interface.</p>
+<hr>
+</section>
+</section>
+<section id="data-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="data-pipeline">3. Data Pipeline</h2>
+<section id="raw-to-analysable" class="level3">
+<h3 class="anchored" data-anchor-id="raw-to-analysable">3.1 Raw to Analysable</h3>
+<pre><code>MC2 data.json (185,147 events)   ─┐
+                                   ├─► global.R ─► RDS cache (&lt; 1s reload)
+org_chart.json (75 nodes)         ─┘</code></pre>
+<p>The JSON event log uses a <strong>deeply nested, sparse schema</strong>: each event has a <code>details</code> field whose structure varies by event type. Flattening is done via <code>purrr::map_dfr()</code> with <code>%||%</code> null-coalescing to handle missing keys type-safely without errors.</p>
+<p>Key derived datasets computed once at startup:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Object</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>events_df</code></td>
+<td>185,147 × 8 flat event table with parsed timestamps, actor types, anomaly flags</td>
+</tr>
+<tr class="even">
+<td><code>chain_events</code></td>
+<td>235 worm relay events with sender/receiver extracted, campaign-tagged</td>
+</tr>
+<tr class="odd">
+<td><code>post_events</code></td>
+<td>All SaidIT posts with <code>content</code> vs <code>content_source</code> field classification</td>
+</tr>
+<tr class="even">
+<td><code>perm_surface</code></td>
+<td>16 SaidIT-capable agents with check counts and pass rates</td>
+</tr>
+<tr class="odd">
+<td><code>queue_task_profile</code></td>
+<td>All 17,038 <code>queue_subordinate_task</code> events with worm/legitimate flag</td>
+</tr>
+<tr class="even">
+<td><code>hop_intervals</code></td>
+<td>Inter-hop relay intervals in minutes per campaign</td>
+</tr>
+<tr class="odd">
+<td><code>agent_campaigns</code></td>
+<td>Per-agent campaign count, touchpoints, relays sent/received</td>
+</tr>
+<tr class="even">
+<td><code>vis_nets</code></td>
+<td>Pre-built <code>visNetwork</code> objects for all 3 campaigns with betweenness centrality</td>
+</tr>
+<tr class="odd">
+<td><code>relay_cal</code></td>
+<td>Day × hour relay counts for calendar heatmap</td>
+</tr>
+<tr class="even">
+<td><code>self_loops</code></td>
+<td>13 self-loop events (sender == receiver) - worm-exclusive signal</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="rds-caching-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="rds-caching-strategy">3.2 RDS Caching Strategy</h3>
+<p>The first run processes raw JSON (approximately 30 seconds). The result is saved as <code>data/mc2_processed.rds</code>. All subsequent Shiny sessions load this RDS file in under one second. This is critical for a web-deployed app where sessions start frequently and users should not wait for data processing.</p>
+</section>
+<section id="persondepartmentteam-join" class="level3">
+<h3 class="anchored" data-anchor-id="persondepartmentteam-join">3.3 Person–Department–Team Join</h3>
+<p><code>org_chart.json</code> uses a three-level hierarchy: <code>department: → team: → person:</code>. Joins are done via two edge-list traversals (department→team, team→person), then a union with direct department→person edges (department leads). The result is <code>person_org_lookup</code> - every person mapped to their department and team - used for colour-coding the org chart, the dept heatmap, and the relay corridor chart.</p>
+<hr>
+</section>
+</section>
+<section id="app-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="app-architecture">4. App Architecture</h2>
+<p>The app uses <strong>Shiny modules</strong> - each module is a fully independent UI + server unit sharing only pre-processed data objects from <code>global.R</code>.</p>
+<pre><code>MC2_ShinyApp/
+├── global.R              # data processing, palettes, helpers (loaded once)
+├── app.R                 # navbarPage with 3 tab panels
+└── modules/
+    ├── mod_overview.R    # Module 1: System Baseline
+    ├── mod_attack.R      # Module 2: Attack Chain
+    └── mod_intervention.R # Module 3: Campaigns &amp; Intervention</code></pre>
+<section id="module-design-rationale" class="level3">
+<h3 class="anchored" data-anchor-id="module-design-rationale">Module Design Rationale</h3>
+<p>Modules are the correct architecture here because: - <strong>Each module answers a different MC2 sub-question</strong> - coupling them would create an unreadable monolith - <strong>Modules share data, not UI state</strong> - the campaign selection in Module 2 does not affect Module 3, which has its own filter - <strong>Each module can be tested independently</strong> - a server function called in isolation with mock inputs - <strong>Deployment flexibility</strong> - individual modules can be profiled for performance without touching others</p>
+<hr>
+</section>
+</section>
+<section id="technology-stack" class="level2">
+<h2 class="anchored" data-anchor-id="technology-stack">5. Technology Stack</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 42%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Layer</th>
+<th>Package</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>UI framework</td>
+<td><code>shiny</code>, <code>bslib</code></td>
+<td>Bootstrap 5 dark theme; <code>bs_theme()</code> for global styling</td>
+</tr>
+<tr class="even">
+<td>Org chart</td>
+<td><code>echarts4r</code></td>
+<td>Collapsible tree with custom tooltips; far more capable than <code>visNetwork</code> for hierarchical data</td>
+</tr>
+<tr class="odd">
+<td>Network vis</td>
+<td><code>visNetwork</code>, <code>igraph</code></td>
+<td>Force-directed layout with physics simulation; <code>igraph</code> for betweenness centrality</td>
+</tr>
+<tr class="even">
+<td>Interactive charts</td>
+<td><code>plotly</code>, <code>ggplot2</code></td>
+<td><code>ggplotly()</code> preserves ggplot2’s grammar while adding hover and zoom</td>
+</tr>
+<tr class="odd">
+<td>Tables</td>
+<td><code>DT</code></td>
+<td>Server-side pagination, column formatting, style rules</td>
+</tr>
+<tr class="even">
+<td>Data wrangling</td>
+<td><code>tidyverse</code>, <code>lubridate</code>, <code>jsonlite</code></td>
+<td>Full tidyverse pipeline; <code>lubridate</code> for Unix timestamp conversion</td>
+</tr>
+<tr class="odd">
+<td>Animation</td>
+<td>base Shiny <code>reactiveVal</code> + <code>invalidateLater()</code></td>
+<td>Play button steps network animation without external JS libraries</td>
+</tr>
+<tr class="even">
+<td>Deployment</td>
+<td>shinyapps.io</td>
+<td>Single-click deploy; free tier adequate for course project traffic</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="modules---feature-depth" class="level2">
+<h2 class="anchored" data-anchor-id="modules---feature-depth">6. Modules - Feature Depth</h2>
+<section id="module-1---system-overview-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="module-1---system-overview-baseline">Module 1 - System Overview &amp; Baseline</h3>
+<p><strong>Purpose</strong>: Establish what the normal Tenant Thread system looks like before investigating the anomaly. An analyst cannot distinguish anomalous from normal without a documented baseline.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 38%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>What it shows</th>
+<th>Novel element</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>echarts4r</code> org chart</td>
+<td>Full company hierarchy across 6 departments, 19 teams, 49 people</td>
+<td>Color-coded by forensic role (red/orange/purple/amber/blue); click node → agent profile panel loads</td>
+</tr>
+<tr class="even">
+<td>Daily event volume</td>
+<td>185,147 events by day with anomaly date markers</td>
+<td>Area chart reveals the worm’s 235 events produce <strong>no visible volume spike</strong> - operationally invisible</td>
+</tr>
+<tr class="odd">
+<td>Agent vs human post chart</td>
+<td>SaidIT posts by poster type</td>
+<td>~50% of all posts are AI agent-initiated - the structural attack surface</td>
+</tr>
+<tr class="even">
+<td>SaidIT permission surface</td>
+<td>16 agents with posting capability, sorted by check count</td>
+<td>All 16 are also worm chain nodes; John Windward’s 100% vs Gabriel Sonar’s 0% check-to-post rate</td>
+</tr>
+<tr class="odd">
+<td>Normal vs loop network</td>
+<td>Structural comparison: 44/152/195 baseline vs 19/130/235 worm</td>
+<td>Side-by-side layout exposes the dense, circular worm mesh against sparse hub-and-spoke baseline</td>
+</tr>
+<tr class="even">
+<td>Self-loop detector</td>
+<td>13 self-loop events, all worm-exclusive</td>
+<td>Zero false positives in 17,038 legitimate queue events</td>
+</tr>
+<tr class="odd">
+<td>Weekly event heatmap</td>
+<td>Top-10 event types by week</td>
+<td>Early-May <code>queue_subordinate_task</code> spike visible in retrospect</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-2---attack-chain-investigation" class="level3">
+<h3 class="anchored" data-anchor-id="module-2---attack-chain-investigation">Module 2 - Attack Chain Investigation</h3>
+<p><strong>Purpose</strong>: Reconstruct exactly how the May 17 post happened and situate it in the wider network.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 38%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>What it shows</th>
+<th>Novel element</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>4-Second Gantt</td>
+<td>Five events over 4 seconds</td>
+<td>Campaign selector regenerates for HiddenOrca, MellowOtter, SwiftWren</td>
+</tr>
+<tr class="even">
+<td>Propagation network</td>
+<td>186 directed relay edges with betweenness centrality sizing</td>
+<td><strong>Play button</strong> animates spread chronologically - 600ms frame steps via <code>invalidateLater()</code></td>
+</tr>
+<tr class="odd">
+<td>Dept contamination heatmap</td>
+<td>Relay hops per directed dept pair</td>
+<td>All 6 departments touched; IT↔︎CS corridor is the arterial highway</td>
+</tr>
+<tr class="even">
+<td>Ranked relay corridors</td>
+<td>Cross-dept flow after removing within-dept relays</td>
+<td>Highlights Executive Suite → IT → Customer Support as the primary worm highway</td>
+</tr>
+<tr class="odd">
+<td>Final relay ladder</td>
+<td>Last 8 hops of SwiftWren to John Windward</td>
+<td>Named 6-step terminal chain: Gabriel Sonar → Zoey Drydock → Lily Anchorline → Daniel Gangway → Chloe Ballast → John Windward</td>
+</tr>
+<tr class="even">
+<td>“Why John?” panel</td>
+<td><code>saidit_post_check</code> completion rates per agent</td>
+<td>John’s 100% vs every other agent’s 0% - differential execution hypothesis</td>
+</tr>
+<tr class="odd">
+<td>Combo-code explorer</td>
+<td>Farm-vocabulary frequencies in <code>virus_check_in</code> events</td>
+<td>15,051 events carrying coded terms; term filter for targeted lookup</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-3---campaigns-intervention" class="level3">
+<h3 class="anchored" data-anchor-id="module-3---campaigns-intervention">Module 3 - Campaigns &amp; Intervention</h3>
+<p><strong>Purpose</strong>: Prove recurrence, identify the intervention point, and quantify its precision.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 38%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>What it shows</th>
+<th>Novel element</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Campaign Gantt</td>
+<td>All 3 campaigns as layered bars</td>
+<td>Solid bar = relay window; faded bar = gap to post; diamonds at post timestamps</td>
+</tr>
+<tr class="even">
+<td>Relay velocity density</td>
+<td>Inter-hop interval distribution</td>
+<td>SwiftWren’s 60-min peak vs irregular earlier campaigns - evidence of timed relay condition</td>
+</tr>
+<tr class="odd">
+<td>Agent overlap bar</td>
+<td>Agents by number of campaigns touched</td>
+<td>Red = in all 3 campaigns; most persistently compromised nodes</td>
+</tr>
+<tr class="even">
+<td>Calendar heatmap</td>
+<td>Day × hour relay density per campaign</td>
+<td>Off-hours posting pattern; SwiftWren’s timed cadence visible as regular intensity</td>
+</tr>
+<tr class="odd">
+<td><strong>What-if intervention simulator</strong></td>
+<td>User types filename pattern → live recall/FP computation</td>
+<td><code>_further_instructions\.md</code>: 235/235 blocked, 0/16,803 false positives</td>
+</tr>
+<tr class="even">
+<td>Before/after network</td>
+<td>SwiftWren relay graph with rule applied</td>
+<td>Rule collapses the full relay graph to near-zero visibility - total network disruption</td>
+</tr>
+<tr class="odd">
+<td>Counterfactual step chart</td>
+<td>Cumulative % of relays blocked per hop number</td>
+<td>100% prevention at hop 1 across all 3 campaigns - red dashed line</td>
+</tr>
+<tr class="even">
+<td>Residual risk table</td>
+<td>6 remaining risks after primary intervention</td>
+<td>Color-coded by severity; Critical (2), High (3), Medium (1)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="storyboard-wireframes" class="level2">
+<h2 class="anchored" data-anchor-id="storyboard-wireframes">7. Storyboard Wireframes</h2>
+<section id="screen-1---system-baseline-module-1" class="level3">
+<h3 class="anchored" data-anchor-id="screen-1---system-baseline-module-1">Screen 1 - System Baseline (Module 1)</h3>
+<div style="border:2px solid #dee2e6;border-radius:10px;overflow:hidden;font-family:'Segoe UI',sans-serif;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:1.8rem;">
+  <!-- Navbar -->
+  <div style="background:#1a2d3f;color:#e8edf2;padding:10px 18px;display:flex;align-items:center;gap:18px;">
+    <span style="font-weight:800;font-size:14px;letter-spacing:-0.02em;">TenantThread Forensics</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:600;">System Baseline</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Attack Chain</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Campaigns &amp; Intervention</span>
+  </div>
+  <!-- Body -->
+  <div style="display:flex;background:#f8f9fa;min-height:340px;">
+    <!-- Sidebar -->
+    <div style="width:210px;min-width:210px;background:#fff;border-right:1px solid #dee2e6;padding:14px 12px;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Filters</div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;color:#555;margin-bottom:3px;">Date range</div>
+        <div style="background:#e8f0ff;border-radius:4px;padding:4px 8px;font-size:11px;color:#3a65c4;">May 8 – Jul 16, 2046</div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;color:#555;margin-bottom:3px;">Department</div>
+        <div style="background:#f1f3f5;border:1px solid #dee2e6;border-radius:4px;padding:4px 8px;font-size:11px;color:#333;">All Departments ▼</div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;color:#555;margin-bottom:3px;">Search agent</div>
+        <div style="background:#f1f3f5;border:1px solid #dee2e6;border-radius:4px;padding:4px 8px;font-size:11px;color:#aaa;">e.g. john_windward</div>
+      </div>
+      <hr style="border:none;border-top:1px solid #e8edf2;margin:10px 0;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Agent Profile</div>
+      <div style="background:#fff8e8;border:1px solid #f5a623;border-radius:6px;padding:8px 10px;">
+        <div style="font-weight:700;font-size:12px;color:#333;">John Windward</div>
+        <div style="font-size:11px;color:#666;margin-top:3px;">Dept: Customer Support</div>
+        <div style="font-size:11px;color:#D9534F;font-weight:600;">Worm: 3 campaigns</div>
+        <div style="font-size:11px;color:#666;">Total events: 2,841</div>
+      </div>
+    </div>
+    <!-- Main -->
+    <div style="flex:1;padding:14px 16px;">
+      <!-- Tab bar -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <span style="background:#5C85D6;color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Org Chart</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Daily Activity</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Posts</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Permissions</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Self-Loops</span>
+      </div>
+      <!-- Org chart placeholder -->
+      <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:14px;margin-bottom:10px;min-height:160px;">
+        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:10px;">ORGANISATIONAL CHART - echarts4r collapsible tree</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span style="background:#e8f0ff;color:#3a65c4;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:600;">All Depts</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Customer Support</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Info. Technologies</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Products</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Human Resources</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Legal</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Executive Suite</span>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:6px 0;">
+          <div style="text-align:center;">
+            <div style="background:#1a2d3f;color:#fff;border-radius:50%;width:36px;height:36px;line-height:36px;margin:0 auto;font-size:11px;font-weight:700;">TT</div>
+            <div style="font-size:10px;color:#555;margin-top:3px;">Tenant Thread</div>
+          </div>
+          <div style="color:#ccc;font-size:18px;margin-top:8px;">→</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="background:#D9534F;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;text-align:center;font-size:10px;font-weight:700;">JW</div>
+              <span style="font-size:10px;color:#D9534F;font-weight:600;">John Windward <span style="background:#ffe0e0;padding:1px 5px;border-radius:3px;">POSTER</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="background:#F5A623;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;text-align:center;font-size:10px;font-weight:700;">CB</div>
+              <span style="font-size:10px;color:#F5A623;font-weight:600;">Chloe Ballast <span style="background:#fff3dc;padding:1px 5px;border-radius:3px;">CHAIN</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="background:#5C85D6;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;text-align:center;font-size:10px;font-weight:700;">EH</div>
+              <span style="font-size:10px;color:#5C85D6;font-weight:600;">Emma Harbor <span style="background:#e8f0ff;padding:1px 5px;border-radius:3px;">CFO / ORIGIN</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Bottom row -->
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px;">
+          <div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px;">DAILY EVENT VOLUME</div>
+          <div style="height:48px;background:linear-gradient(to top,#e8f0ff,#fff);border-radius:4px;position:relative;overflow:hidden;">
+            <div style="position:absolute;bottom:0;left:38%;width:2px;height:100%;background:#D9534F;opacity:0.7;"></div>
+            <div style="position:absolute;bottom:0;left:52%;width:2px;height:100%;background:#D9534F;opacity:0.7;"></div>
+            <div style="position:absolute;bottom:0;left:72%;width:2px;height:100%;background:#D9534F;opacity:0.7;"></div>
+          </div>
+          <div style="font-size:10px;color:#888;margin-top:4px;">Red lines = anomalous post dates</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px;">
+          <div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px;">SaidIT PERMISSION SURFACE</div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:60%;height:8px;background:#D9534F;border-radius:2px;"></div><span style="font-size:10px;color:#555;">john_windward</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:45%;height:8px;background:#F5A623;border-radius:2px;"></div><span style="font-size:10px;color:#555;">gabriel_sonar</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:30%;height:8px;background:#5C85D6;border-radius:2px;"></div><span style="font-size:10px;color:#555;">+ 14 agents</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section id="screen-2---attack-chain-module-2" class="level3">
+<h3 class="anchored" data-anchor-id="screen-2---attack-chain-module-2">Screen 2 - Attack Chain (Module 2)</h3>
+<div style="border:2px solid #dee2e6;border-radius:10px;overflow:hidden;font-family:'Segoe UI',sans-serif;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:1.8rem;">
+  <!-- Navbar -->
+  <div style="background:#1a2d3f;color:#e8edf2;padding:10px 18px;display:flex;align-items:center;gap:18px;">
+    <span style="font-weight:800;font-size:14px;">TenantThread Forensics</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">System Baseline</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:600;">Attack Chain</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Campaigns &amp; Intervention</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:11px;color:#a0b4c8;">Campaign:</span>
+      <span style="background:#E87C7C;color:#fff;padding:3px 12px;border-radius:4px;font-size:11px;font-weight:700;">SwiftWren ▼</span>
+    </div>
+  </div>
+  <!-- Tab bar -->
+  <div style="background:#fff;border-bottom:1px solid #dee2e6;padding:8px 16px;display:flex;gap:6px;">
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">4-Second Sequence</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Propagation Network</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Dept Heatmap</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Corridors</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Relay Ladder</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Combo Codes</span>
+  </div>
+  <!-- Network -->
+  <div style="background:#f8f9fa;padding:16px;">
+    <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:16px;min-height:200px;">
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:12px;">PROPAGATION NETWORK - visNetwork · 19 agents · 186 relay edges · hover to highlight path</div>
+      <!-- Fake network nodes -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-wrap:wrap;gap:8px;min-height:130px;position:relative;">
+        <div style="text-align:center;">
+          <div style="background:#8e44ad;color:#fff;border-radius:50%;width:42px;height:42px;line-height:42px;margin:0 auto;font-size:10px;font-weight:700;">EH</div>
+          <div style="font-size:9px;color:#8e44ad;font-weight:700;margin-top:3px;">Emma Harbor</div>
+          <div style="font-size:9px;background:#f3e8ff;color:#6b2fa0;padding:1px 5px;border-radius:3px;margin-top:1px;">CFO · ORIGIN</div>
+        </div>
+        <div style="color:#5C85D6;font-size:18px;">⟶</div>
+        <div style="text-align:center;">
+          <div style="background:#F5A623;color:#fff;border-radius:50%;width:42px;height:42px;line-height:42px;margin:0 auto;font-size:10px;font-weight:700;">GS</div>
+          <div style="font-size:9px;color:#F5A623;font-weight:700;margin-top:3px;">Gabriel Sonar</div>
+          <div style="font-size:9px;background:#fff3dc;color:#8a5800;padding:1px 5px;border-radius:3px;margin-top:1px;">Patient Zero</div>
+        </div>
+        <div style="color:#5C85D6;font-size:18px;">⟶</div>
+        <div style="text-align:center;">
+          <div style="background:#2EADC1;color:#fff;border-radius:50%;width:36px;height:36px;line-height:36px;margin:0 auto;font-size:10px;font-weight:700;">ED</div>
+          <div style="font-size:9px;color:#2EADC1;font-weight:700;margin-top:3px;">Evelyn Dock</div>
+          <div style="font-size:9px;color:#888;margin-top:1px;">17 relays</div>
+        </div>
+        <div style="color:#aaa;font-size:12px;">· · · 14 more agents · · ·</div>
+        <div style="text-align:center;">
+          <div style="background:#F5A623;color:#fff;border-radius:50%;width:42px;height:42px;line-height:42px;margin:0 auto;font-size:10px;font-weight:700;">CB</div>
+          <div style="font-size:9px;color:#F5A623;font-weight:700;margin-top:3px;">Chloe Ballast</div>
+          <div style="font-size:9px;background:#fff3dc;color:#8a5800;padding:1px 5px;border-radius:3px;margin-top:1px;">IT Lead · Gateway</div>
+        </div>
+        <div style="color:#D9534F;font-size:18px;font-weight:700;">⟶</div>
+        <div style="text-align:center;">
+          <div style="background:#D9534F;color:#fff;border-radius:50%;width:48px;height:48px;line-height:48px;margin:0 auto;font-size:10px;font-weight:700;">JW</div>
+          <div style="font-size:9px;color:#D9534F;font-weight:700;margin-top:3px;">John Windward</div>
+          <div style="font-size:9px;background:#ffe0e0;color:#a01010;padding:1px 5px;border-radius:3px;margin-top:1px;">CS Lead · POSTED</div>
+        </div>
+      </div>
+    </div>
+    <!-- Playback controls -->
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px 14px;">
+      <button style="background:#5C85D6;color:#fff;border:none;border-radius:4px;padding:5px 14px;font-size:12px;cursor:pointer;">▶ Play</button>
+      <button style="background:#f1f3f5;color:#555;border:1px solid #dee2e6;border-radius:4px;padding:5px 12px;font-size:12px;">⏸ Pause</button>
+      <button style="background:#f1f3f5;color:#555;border:1px solid #dee2e6;border-radius:4px;padding:5px 12px;font-size:12px;">↺ Reset</button>
+      <span style="font-size:11px;color:#888;margin-left:8px;">Hop: <strong>186 / 186</strong></span>
+      <div style="margin-left:auto;display:flex;gap:12px;font-size:11px;color:#555;">
+        <label><input type="checkbox" checked="" style="margin-right:4px;">Show self-loops</label>
+        <label><input type="checkbox" style="margin-right:4px;">Overlay normal network</label>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section id="screen-3---campaigns-intervention-simulator-module-3" class="level3">
+<h3 class="anchored" data-anchor-id="screen-3---campaigns-intervention-simulator-module-3">Screen 3 - Campaigns &amp; Intervention Simulator (Module 3)</h3>
+<div style="border:2px solid #dee2e6;border-radius:10px;overflow:hidden;font-family:'Segoe UI',sans-serif;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:1.8rem;">
+  <!-- Navbar -->
+  <div style="background:#1a2d3f;color:#e8edf2;padding:10px 18px;display:flex;align-items:center;gap:18px;">
+    <span style="font-weight:800;font-size:14px;">TenantThread Forensics</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">System Baseline</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Attack Chain</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:600;">Campaigns &amp; Intervention</span>
+  </div>
+  <!-- Body -->
+  <div style="display:flex;background:#f8f9fa;min-height:320px;">
+    <!-- Sidebar -->
+    <div style="width:220px;min-width:220px;background:#fff;border-right:1px solid #dee2e6;padding:14px 12px;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Intervention Rule</div>
+      <div style="font-size:11px;color:#555;margin-bottom:4px;">Regex pattern to block:</div>
+      <div style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;padding:6px 8px;font-size:10px;font-family:monospace;color:#333;word-break:break-all;">_further_instructions\.md</div>
+      <button style="background:#27AE60;color:#fff;border:none;border-radius:5px;padding:7px 0;width:100%;margin-top:10px;font-size:12px;font-weight:600;cursor:pointer;">▶ Test Rule</button>
+      <hr style="border:none;border-top:1px solid #e8edf2;margin:12px 0;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Simulation Results</div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Worm relays blocked</span><strong style="color:#D9534F;">235 / 235</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">False positives</span><strong style="color:#27AE60;">0</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Recall</span><strong style="color:#27AE60;">100%</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">FP rate</span><strong style="color:#27AE60;">0.00%</strong></div>
+      </div>
+      <hr style="border:none;border-top:1px solid #e8edf2;margin:12px 0;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Campaigns</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;">
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked=""><span style="color:#5C85D6;font-weight:600;">HiddenOrca</span> <span style="color:#888;">(39 hops)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked=""><span style="color:#2EADC1;font-weight:600;">MellowOtter</span> <span style="color:#888;">(10 hops)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked=""><span style="color:#E87C7C;font-weight:600;">SwiftWren</span> <span style="color:#888;">(186 hops)</span></label>
+      </div>
+    </div>
+    <!-- Main -->
+    <div style="flex:1;padding:14px 16px;">
+      <!-- Stat cards -->
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:#D9534F;">235</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">Relays Blocked</div>
+          <div style="font-size:11px;font-weight:700;color:#D9534F;">100%</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:#27AE60;">16,803</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">Legit Untouched</div>
+          <div style="font-size:11px;font-weight:700;color:#27AE60;">0 FP</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:#5C85D6;">0.00%</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">False Positive Rate</div>
+          <div style="font-size:11px;font-weight:700;color:#5C85D6;">Safe to deploy</div>
+        </div>
+      </div>
+      <!-- Before/After network -->
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;color:#D9534F;margin-bottom:8px;">BEFORE RULE - 186-edge relay mesh</div>
+          <div style="height:80px;background:linear-gradient(135deg,#fff0f0,#fff);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px dashed #D9534F30;">
+            <span style="font-size:11px;color:#D9534F;font-weight:600;">Dense worm network visible</span>
+          </div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;color:#27AE60;margin-bottom:8px;">AFTER RULE - 0 relay edges remain</div>
+          <div style="height:80px;background:linear-gradient(135deg,#f0fff4,#fff);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px dashed #27AE6030;">
+            <span style="font-size:11px;color:#27AE60;font-weight:600;">Worm completely disconnected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+</section>
+</section>
+<section id="project-timeline" class="level2">
+<h2 class="anchored" data-anchor-id="project-timeline">8. Project Timeline</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-7d2e6161e22eec0e22f3" style="width:100%;height:510px;"></div>
+<script type="application/json" data-for="htmlwidget-7d2e6161e22eec0e22f3">{"x":{"visdat":{"2bd171937c9b":["function () ","plotlyVisDat"]},"cur_data":"2bd171937c9b","attrs":{"2bd171937c9b":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","orientation":"h","y":"Proposal & Planning","x":1382400000,"base":"2026-05-25","marker":{"color":"#27AE60","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"Completed","legendgroup":"Completed","showlegend":true,"hovertemplate":"<b>Proposal & Planning<\/b><br>Owner: All Team<br>2026-05-25 → 2026-06-09<extra><\/extra>","inherit":true},"2bd171937c9b.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","orientation":"h","y":["Website + Methodology","Shiny App: Module 1 (Baseline)","Shiny App: Module 2 (Attack Chain)"],"x":[1296000000,691200000,1036800000],"base":["2026-06-01","2026-06-10","2026-06-10"],"marker":{"color":"#F39C12","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"In Progress","legendgroup":"In Progress","showlegend":true,"hovertemplate":["<b>Website + Methodology<\/b><br>Owner: Do Thi Tue Minh<br>2026-06-01 → 2026-06-15<extra><\/extra>","<b>Shiny App: Module 1 (Baseline)<\/b><br>Owner: Tam & Amelia<br>2026-06-10 → 2026-06-17<extra><\/extra>","<b>Shiny App: Module 2 (Attack Chain)<\/b><br>Owner: Tam & Amelia<br>2026-06-10 → 2026-06-21<extra><\/extra>"],"inherit":true},"2bd171937c9b.2":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","orientation":"h","y":["Shiny App: Module 3 (Intervention)","Findings & Analysis","App Integration & Testing","Poster Design"],"x":[950400000,1382400000,432000000,864000000],"base":["2026-06-14","2026-06-14","2026-06-20","2026-06-20"],"marker":{"color":"#5C85D6","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"Upcoming","legendgroup":"Upcoming","showlegend":true,"hovertemplate":["<b>Shiny App: Module 3 (Intervention)<\/b><br>Owner: Tam & Amelia<br>2026-06-14 → 2026-06-24<extra><\/extra>","<b>Findings & Analysis<\/b><br>Owner: Amelia<br>2026-06-14 → 2026-06-29<extra><\/extra>","<b>App Integration & Testing<\/b><br>Owner: Tam & Amelia<br>2026-06-20 → 2026-06-24<extra><\/extra>","<b>Poster Design<\/b><br>Owner: Do Thi Tue Minh & Tam<br>2026-06-20 → 2026-06-29<extra><\/extra>"],"inherit":true},"2bd171937c9b.3":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","orientation":"h","y":["★ Website + Methodology Deadline","★ Shiny App + User Guide Deadline","★ Findings + Poster Deadline","★ Final Submission"],"x":[86400000,86400000,86400000,86400000],"base":["2026-06-16","2026-06-25","2026-06-30","2026-07-05"],"marker":{"color":"#E74C3C","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"Deadline","legendgroup":"Deadline","showlegend":true,"hovertemplate":["<b>★ Website + Methodology Deadline<\/b><br>Owner: All Team<br>2026-06-16 → 2026-06-16<extra><\/extra>","<b>★ Shiny App + User Guide Deadline<\/b><br>Owner: All Team<br>2026-06-25 → 2026-06-25<extra><\/extra>","<b>★ Findings + Poster Deadline<\/b><br>Owner: All Team<br>2026-06-30 → 2026-06-30<extra><\/extra>","<b>★ Final Submission<\/b><br>Owner: All Team<br>2026-07-05 → 2026-07-05<extra><\/extra>"],"inherit":true}},"layout":{"height":540,"margin":{"b":90,"l":240,"t":50,"r":20},"title":{"text":"TenantThread Forensics - Project Timeline","font":{"size":14,"color":"#333"}},"barmode":"overlay","xaxis":{"domain":[0,1],"automargin":true,"type":"date","tickformat":"%b %d","title":"","range":["2026-05-22","2026-07-10"],"tickangle":-30,"dtick":604800000},"yaxis":{"domain":[0,1],"automargin":true,"title":"","autorange":"reversed","categoryorder":"array","categoryarray":["★ Final Submission","★ Findings + Poster Deadline","★ Shiny App + User Guide Deadline","★ Website + Methodology Deadline","Poster Design","App Integration & Testing","Findings & Analysis","Shiny App: Module 3 (Intervention)","Shiny App: Module 2 (Attack Chain)","Shiny App: Module 1 (Baseline)","Website + Methodology","Proposal & Planning"],"type":"category"},"shapes":[{"type":"line","x0":"2026-06-14","x1":"2026-06-14","y0":-0.5,"y1":11.5,"line":{"color":"#E74C3C","dash":"dash","width":2}},{"type":"line","x0":"2026-06-16","x1":"2026-06-16","y0":-0.5,"y1":11.5,"line":{"color":"#9B59B6","dash":"dot","width":1.5}},{"type":"line","x0":"2026-06-25","x1":"2026-06-25","y0":-0.5,"y1":11.5,"line":{"color":"#9B59B6","dash":"dot","width":1.5}},{"type":"line","x0":"2026-06-30","x1":"2026-06-30","y0":-0.5,"y1":11.5,"line":{"color":"#9B59B6","dash":"dot","width":1.5}}],"annotations":[{"x":"2026-06-14","y":0,"text":"Today","showarrow":false,"font":{"color":"#E74C3C","size":10},"xanchor":"left","yanchor":"top"},{"x":"2026-06-16","y":11,"text":"16 Jun","showarrow":false,"font":{"color":"#9B59B6","size":9},"xanchor":"left","yanchor":"bottom"},{"x":"2026-06-25","y":11,"text":"25 Jun","showarrow":false,"font":{"color":"#9B59B6","size":9},"xanchor":"left","yanchor":"bottom"},{"x":"2026-06-30","y":11,"text":"30 Jun","showarrow":false,"font":{"color":"#9B59B6","size":9},"xanchor":"left","yanchor":"bottom"}],"legend":{"orientation":"h","x":0,"y":-0.22,"traceorder":"normal"},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"#fafbfc","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"type":"bar","orientation":"h","y":["Proposal & Planning"],"x":[1382400000],"base":"2026-05-25","marker":{"color":"#27AE60","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"Completed","legendgroup":"Completed","showlegend":true,"hovertemplate":"<b>Proposal & Planning<\/b><br>Owner: All Team<br>2026-05-25 → 2026-06-09<extra><\/extra>","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"type":"bar","orientation":"h","y":["Website + Methodology","Shiny App: Module 1 (Baseline)","Shiny App: Module 2 (Attack Chain)"],"x":[1296000000,691200000,1036800000],"base":["2026-06-01","2026-06-10","2026-06-10"],"marker":{"color":"#F39C12","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"In Progress","legendgroup":"In Progress","showlegend":true,"hovertemplate":["<b>Website + Methodology<\/b><br>Owner: Do Thi Tue Minh<br>2026-06-01 → 2026-06-15<extra><\/extra>","<b>Shiny App: Module 1 (Baseline)<\/b><br>Owner: Tam & Amelia<br>2026-06-10 → 2026-06-17<extra><\/extra>","<b>Shiny App: Module 2 (Attack Chain)<\/b><br>Owner: Tam & Amelia<br>2026-06-10 → 2026-06-21<extra><\/extra>"],"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"type":"bar","orientation":"h","y":["Shiny App: Module 3 (Intervention)","Findings & Analysis","App Integration & Testing","Poster Design"],"x":[950400000,1382400000,432000000,864000000],"base":["2026-06-14","2026-06-14","2026-06-20","2026-06-20"],"marker":{"color":"#5C85D6","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"Upcoming","legendgroup":"Upcoming","showlegend":true,"hovertemplate":["<b>Shiny App: Module 3 (Intervention)<\/b><br>Owner: Tam & Amelia<br>2026-06-14 → 2026-06-24<extra><\/extra>","<b>Findings & Analysis<\/b><br>Owner: Amelia<br>2026-06-14 → 2026-06-29<extra><\/extra>","<b>App Integration & Testing<\/b><br>Owner: Tam & Amelia<br>2026-06-20 → 2026-06-24<extra><\/extra>","<b>Poster Design<\/b><br>Owner: Do Thi Tue Minh & Tam<br>2026-06-20 → 2026-06-29<extra><\/extra>"],"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"type":"bar","orientation":"h","y":["★ Website + Methodology Deadline","★ Shiny App + User Guide Deadline","★ Findings + Poster Deadline","★ Final Submission"],"x":[86400000,86400000,86400000,86400000],"base":["2026-06-16","2026-06-25","2026-06-30","2026-07-05"],"marker":{"color":"#E74C3C","opacity":0.84999999999999998,"line":{"color":"white","width":1.5}},"name":"Deadline","legendgroup":"Deadline","showlegend":true,"hovertemplate":["<b>★ Website + Methodology Deadline<\/b><br>Owner: All Team<br>2026-06-16 → 2026-06-16<extra><\/extra>","<b>★ Shiny App + User Guide Deadline<\/b><br>Owner: All Team<br>2026-06-25 → 2026-06-25<extra><\/extra>","<b>★ Findings + Poster Deadline<\/b><br>Owner: All Team<br>2026-06-30 → 2026-06-30<extra><\/extra>","<b>★ Final Submission<\/b><br>Owner: All Team<br>2026-07-05 → 2026-07-05<extra><\/extra>"],"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<hr>
+</section>
+<section id="division-of-labour" class="level2">
+<h2 class="anchored" data-anchor-id="division-of-labour">9. Division of Labour</h2>
+<p>Responsibilities were divided by deliverable rather than challenge question, as agreed at the team meeting on 7 June 2026. GitHub is the primary collaboration platform with branches and pull requests for all contributions.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 39%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Member</th>
+<th>Deliverables</th>
+<th>Responsibilities</th>
+<th>Deadline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Minh</strong></td>
+<td>Website &amp; Methodology</td>
+<td>Project website (Quarto); methodology documentation; proposal; data pipeline design; forensic register; network and temporal analysis write-up</td>
+<td><strong>16 Jun 2026</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Tam</strong></td>
+<td>Shiny App + Poster</td>
+<td>Shiny Module 1 (System Baseline): org chart, daily activity, normal-vs-loop comparison, self-loop detector; poster co-design</td>
+<td><strong>25 Jun / 30 Jun</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Amelia</strong></td>
+<td>Shiny App + Findings</td>
+<td>Shiny Module 2 &amp; 3 (Attack Chain + Intervention): propagation network, intervention simulator, counterfactual; written findings report; user guide</td>
+<td><strong>25 Jun / 30 Jun</strong></td>
+</tr>
+<tr class="even">
+<td><strong>All</strong></td>
+<td>Integration &amp; Poster</td>
+<td>App integration, testing, poster (final), deployment</td>
+<td><strong>30 Jun / 5 Jul</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="why-this-work-is-novel" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-work-is-novel">10. Why This Work Is Novel</h2>
+<p>No prior ISSS608 or VAST project has built an <strong>animated, interactive forensic reconstruction</strong> of a multi-agent network compromise with a live intervention simulator. The closest past work (FishEye, The Big Fish) built network exploration tools for static fishery data. This platform:</p>
+<ul>
+<li><strong>Animates</strong> the worm spread temporally - a play button steps through 186 relay hops chronologically over nine calendar days</li>
+<li><strong>Proves the intervention analytically</strong> - 235/235 malicious events blocked, 0/16,803 false positives, demonstrated live in the app</li>
+<li><strong>Integrates three independent analytical angles</strong> (system baseline, attack chain, campaign history) in one synchronised interface</li>
+<li><strong>Applies forensic methodology</strong> (evidence register, bounded inference, counterfactual proof) to a visual analytics context - distinguishing what the data proves from what it suggests</li>
+<li><strong>Frames the attack correctly</strong>: not a bug, not a glitch, but a predictable consequence of architectural choices that prioritised autonomy over accountability</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>ISSS608 Visual Analytics · AY2025-26 April Term · Group Project <a href="https://vast-challenge.github.io/2026/MC2.html">VAST Challenge 2026 MC2</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

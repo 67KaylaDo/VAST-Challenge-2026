@@ -1,0 +1,340 @@
+/* ── TenantThread Forensics – Project Website Styles ─────────────────────── */
+
+/* ── Typography ─────────────────────────────────────────────────────────── */
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── Navbar brand ───────────────────────────────────────────────────────── */
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.03em;
+}
+
+/* ── Hero banner on Home ────────────────────────────────────────────────── */
+.hero-banner {
+  background: linear-gradient(135deg, #0f1923 0%, #1a2d3f 50%, #0f1923 100%);
+  color: #e8edf2;
+  padding: 4rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-banner h1 {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 0.6rem;
+}
+
+.hero-banner .subtitle {
+  font-size: 1.1rem;
+  color: #a0b4c8;
+  margin-bottom: 1.6rem;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(92, 133, 214, 0.25);
+  border: 1px solid #5C85D6;
+  color: #7faff0;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+/* ── Key-finding callout cards ─────────────────────────────────────────── */
+.finding-card {
+  background: #fff;
+  border-left: 4px solid #5C85D6;
+  border-radius: 8px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.15s ease;
+}
+
+.finding-card:hover { transform: translateY(-2px); }
+.finding-card.red    { border-left-color: #D9534F; }
+.finding-card.teal   { border-left-color: #2EADC1; }
+.finding-card.amber  { border-left-color: #F5A623; }
+
+.finding-card .finding-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 0.3rem;
+}
+
+.finding-card .finding-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+/* ── Team cards ─────────────────────────────────────────────────────────── */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin: 1.5rem 0;
+}
+
+.team-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem 1.2rem;
+  text-align: center;
+  border: 1px solid #e0e6ed;
+}
+
+.team-card .avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5C85D6, #2EADC1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin: 0 auto 0.8rem;
+  color: white;
+  font-weight: 700;
+}
+
+.team-card .name    { font-weight: 700; font-size: 0.95rem; }
+.team-card .role    { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
+.team-card .module  {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  background: #e8f0ff;
+  color: #3a65c4;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* ── Timeline / milestone ───────────────────────────────────────────────── */
+.milestone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.milestone-card {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 1rem;
+  border-top: 3px solid #5C85D6;
+  text-align: center;
+}
+
+.milestone-card.done   { border-top-color: #27AE60; }
+.milestone-card.urgent { border-top-color: #D9534F; }
+
+.milestone-card .ms-date {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #5C85D6;
+}
+
+.milestone-card.done   .ms-date { color: #27AE60; }
+.milestone-card.urgent .ms-date { color: #D9534F; }
+
+.milestone-card .ms-label { font-size: 0.8rem; color: #555; margin-top: 0.2rem; }
+
+/* ── Module feature list ────────────────────────────────────────────────── */
+.module-box {
+  border: 1px solid #e0e6ed;
+  border-radius: 10px;
+  padding: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.module-box h4 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.module-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #e8f0ff;
+  color: #3a65c4;
+}
+
+/* ── Screenshot gallery ─────────────────────────────────────────────────── */
+.screenshot-frame {
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  margin: 1rem 0;
+}
+
+.screenshot-frame img { width: 100%; display: block; }
+
+.screenshot-caption {
+  background: #f8f9fa;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.8rem;
+  color: #666;
+  border-top: 1px solid #dee2e6;
+}
+
+/* ── Utility ────────────────────────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  margin-right: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.tag-r    { background: #dceeff; color: #1a5f9e; }
+.tag-shiny{ background: #ffe0e8; color: #b01040; }
+.tag-net  { background: #e0f4f1; color: #0a6b5c; }
+.tag-va   { background: #fff3dc; color: #8a5800; }
+
+.callout { border-radius: 8px; }
+
+/* ── Methodology pipeline flow ──────────────────────────────────────────── */
+.pipeline-flow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+
+.pipe-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 72px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.pipe-num {
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.pipe-label {
+  font-size: 0.68rem;
+  line-height: 1.3;
+  margin-top: 0.2rem;
+  font-weight: 600;
+}
+
+.pipe-arrow {
+  font-size: 1.4rem;
+  color: #aab8c8;
+  font-weight: 300;
+}
+
+.stage-1 { background: linear-gradient(135deg, #3498DB, #2980B9); }
+.stage-2 { background: linear-gradient(135deg, #E74C3C, #C0392B); }
+.stage-3 { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+.stage-4 { background: linear-gradient(135deg, #1ABC9C, #16A085); }
+.stage-5 { background: linear-gradient(135deg, #F39C12, #E67E22); }
+.stage-6 { background: linear-gradient(135deg, #27AE60, #229954); }
+
+/* ── Forensic role chips ────────────────────────────────────────────────── */
+.role-chip {
+  border-left: 4px solid #ccc;
+  padding: 0.3rem 0.8rem;
+  background: #f8f9fa;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.85rem;
+}
+
+/* ── Four-second sequence table ─────────────────────────────────────────── */
+.seq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin: 1rem 0;
+}
+
+.seq-table th {
+  background: #1a2d3f;
+  color: #e8edf2;
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.seq-table td {
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid #e8edf2;
+  vertical-align: top;
+}
+
+.seq-relay  { border-left: 3px solid #5C85D6; background: #f0f5ff; }
+.seq-check  { border-left: 3px solid #F39C12; background: #fffbf0; }
+.seq-post   { border-left: 3px solid #E74C3C; background: #fff5f5; }
+.seq-delete { border-left: 3px solid #888;    background: #f8f8f8; }
+
+/* ── Relay chain visual ─────────────────────────────────────────────────── */
+.relay-chain {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 1.2rem 0;
+}
+
+.relay-node {
+  background: #e8f0ff;
+  color: #2c4a8a;
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  min-width: 60px;
+  line-height: 1.3;
+}
+
+.relay-gateway { background: #f3e8ff; color: #6b2fa0; }
+.relay-poster  { background: #ffe8e8; color: #a01010; }
+
+.relay-arrow {
+  color: #aab8c8;
+  font-size: 1.2rem;
+  font-weight: 300;
+}

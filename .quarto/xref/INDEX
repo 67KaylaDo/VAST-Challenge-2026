@@ -1,0 +1,26 @@
+{
+  "analysis.qmd": {
+    "analysis.html": "b655c04d"
+  },
+  "proposal.qmd": {
+    "proposal.html": "b00605a9"
+  },
+  "userguide.qmd": {
+    "userguide.html": "4104eb26"
+  },
+  "poster.qmd": {
+    "poster.html": "d1d2603e"
+  },
+  "methodology.qmd": {
+    "methodology.html": "4e3f7667"
+  },
+  "index.qmd": {
+    "index.html": "5b7997dd"
+  },
+  "data copy/MC2 data description.md": {
+    "MC2 data description.html": "a67e19bb"
+  },
+  "analysis.rmarkdown": {
+    "analysis.html": "25c4f4e8"
+  }
+}

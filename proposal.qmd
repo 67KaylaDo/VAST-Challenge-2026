@@ -1,0 +1,662 @@
+---
+title: "Project Proposal"
+subtitle: "TenantThread Forensics - VAST Challenge 2026 MC2"
+date: "2026-06-09"
+---
+
+## Project Summary
+
+| Item | Detail |
+|------|--------|
+| **Challenge** | VAST Challenge 2026 Mini-Challenge 2 |
+| **Theme** | Reconstructing a prompt-injection worm in a multi-agent enterprise AI system |
+| **Deliverable** | Interactive Shiny forensic investigation platform |
+| **Dataset** | `MC2 data.json` (185,147 events, 24 event types, May-July 2046) + `org_chart.json` (75 nodes, 74 edges: 49 persons, 19 teams, 6 departments) |
+| **Team** | Do Thi Tue Minh · Trinh Minh Tam · Amelia Rosalind |
+| **Proposal deadline** | 10 June 2026 |
+| **Final submission** | 5 July 2026 |
+
+---
+
+## 1. Problem Statement
+
+On **17 May 2046 at 11:21 UTC** (4:21 am challenge-stated local time), a post appeared on SaidIT - Tenant Thread's internal social platform - attributed to John Windward, Department Lead of Customer Support. The post body was not typed text. The event log records `content_source = "SwiftWren.txt"`, a 30,615-byte file read from disk and used as the post body, then deleted **two seconds later**. The instruction file that triggered the post was deleted **one second** after the post.
+
+Five automated events fired in four seconds. No human was involved at any step.
+
+The MC2 dataset contains **185,147 events** spanning May–July 2046 across Tenant Thread's full AI-agent-enabled workforce. The challenge asks:
+
+1. **What is the exact event chain for the May 17 post?** What does the wider system look like around it?
+2. **What does the post content mean and where did it originate?**
+3. **Did similar incidents happen before? Where is the single best intervention point?**
+
+### Why This Is Hard
+
+| Challenge | Detail |
+|---|---|
+| Scale | 185,147 events; worm events are 235 of 17,038 queue events - 1.4% signal in noise |
+| Structural invisibility | Malicious relays are structurally identical to legitimate `queue_subordinate_task` events |
+| Evidence destruction | Both the instruction file and payload were deleted seconds after the post; content is forensically unrecoverable |
+| Distributed causality | The attack spans 18 agents, 6 departments, 9 calendar days - no single event tells the story |
+| Prior incidents | HiddenOrca and MellowOtter fired before SwiftWren with no logged response; the system was compromised continuously for 9+ days |
+
+---
+
+## 2. Motivation
+
+### 2.1 Why This Problem Is Analytically Important
+
+Tenant Thread's architecture is a near-future analogue of real-world enterprise AI deployments: autonomous agents with file-system access, messaging rights, and cross-department task queuing. These capabilities are being deployed today in enterprise copilot systems. The MC2 incident is not a contrived toy problem - it is a forensically realistic **prompt-injection worm** targeting a plausible multi-agent architecture.
+
+The attack exploited three properties that are inherent to current agentic AI design:
+
+1. **Agents process file content as executable context.** A `*_further_instructions.md` file can override an agent's operating instructions - no vulnerability is required.
+2. **Agent-to-agent delegation has no trust zone.** `queue_subordinate_task` works across any two agents regardless of department or reporting relationship.
+3. **Autonomous posts need no human approval.** The `saidit_post` + `saidit_post_check` flow confirms posting permission but never asks "was this authorised by a human?"
+
+### 2.2 Why Static Analysis Is Insufficient
+
+Prior VAST submissions and static reports answer one question per chart. An analyst investigating this incident needs to:
+
+- **Pivot** between the org chart, relay network, campaign timeline, and intervention evidence in a single session
+- **Animate** the worm's temporal spread to understand how it moved through the agent network over nine days
+- **Test hypotheses** with a live what-if simulator - try different blocking rules, see precision/recall immediately
+- **Drill down** from organisation level → department → team → individual agent → raw event list
+
+No existing static report format supports this investigative workflow. A Shiny platform that integrates all four analytical angles into one interface is the correct medium.
+
+### 2.3 What the Three Teammate Submissions Contributed
+
+This project synthesises findings from three independent analyses of the same dataset. Each brought a distinct analytical lens:
+
+| Analyst | Primary contribution |
+|---|---|
+| Do Thi Tue Minh | Forensic register methodology; betweenness centrality network; dept corridor ranking; relay ladder; combo-code explorer; what-if intervention simulator with 0-FP proof |
+| Tam | Two-phase attack architecture discovery (relay infrastructure seeded before payload); normal-vs-loop network structural comparison (44 agents/152 edges baseline vs. 19 agents/130 edges worm mesh); self-loop as zero-FP detection signal |
+| Amelia | Payload exfiltration hypothesis (SwiftWren.txt = 30,615 bytes derived from `meeting_notes.doc`); John Windward's 100% check-to-post conversion rate vs. Gabriel Sonar's 0% (11 checks, 0 posts); sandbox file-handling as third intervention layer |
+
+The Shiny platform integrates all findings into a unified investigative interface.
+
+---
+
+## 3. Data Pipeline
+
+### 3.1 Raw to Analysable
+
+```
+MC2 data.json (185,147 events)   ─┐
+                                   ├─► global.R ─► RDS cache (< 1s reload)
+org_chart.json (75 nodes)         ─┘
+```
+
+The JSON event log uses a **deeply nested, sparse schema**: each event has a `details` field whose structure varies by event type. Flattening is done via `purrr::map_dfr()` with `%||%` null-coalescing to handle missing keys type-safely without errors.
+
+Key derived datasets computed once at startup:
+
+| Object | Description |
+|---|---|
+| `events_df` | 185,147 × 8 flat event table with parsed timestamps, actor types, anomaly flags |
+| `chain_events` | 235 worm relay events with sender/receiver extracted, campaign-tagged |
+| `post_events` | All SaidIT posts with `content` vs `content_source` field classification |
+| `perm_surface` | 16 SaidIT-capable agents with check counts and pass rates |
+| `queue_task_profile` | All 17,038 `queue_subordinate_task` events with worm/legitimate flag |
+| `hop_intervals` | Inter-hop relay intervals in minutes per campaign |
+| `agent_campaigns` | Per-agent campaign count, touchpoints, relays sent/received |
+| `vis_nets` | Pre-built `visNetwork` objects for all 3 campaigns with betweenness centrality |
+| `relay_cal` | Day × hour relay counts for calendar heatmap |
+| `self_loops` | 13 self-loop events (sender == receiver) - worm-exclusive signal |
+
+### 3.2 RDS Caching Strategy
+
+The first run processes raw JSON (approximately 30 seconds). The result is saved as `data/mc2_processed.rds`. All subsequent Shiny sessions load this RDS file in under one second. This is critical for a web-deployed app where sessions start frequently and users should not wait for data processing.
+
+### 3.3 Person–Department–Team Join
+
+`org_chart.json` uses a three-level hierarchy: `department: → team: → person:`. Joins are done via two edge-list traversals (department→team, team→person), then a union with direct department→person edges (department leads). The result is `person_org_lookup` - every person mapped to their department and team - used for colour-coding the org chart, the dept heatmap, and the relay corridor chart.
+
+---
+
+## 4. App Architecture
+
+The app uses **Shiny modules** - each module is a fully independent UI + server unit sharing only pre-processed data objects from `global.R`.
+
+```
+MC2_ShinyApp/
+├── global.R              # data processing, palettes, helpers (loaded once)
+├── app.R                 # navbarPage with 3 tab panels
+└── modules/
+    ├── mod_overview.R    # Module 1: System Baseline
+    ├── mod_attack.R      # Module 2: Attack Chain
+    └── mod_intervention.R # Module 3: Campaigns & Intervention
+```
+
+### Module Design Rationale
+
+Modules are the correct architecture here because:
+- **Each module answers a different MC2 sub-question** - coupling them would create an unreadable monolith
+- **Modules share data, not UI state** - the campaign selection in Module 2 does not affect Module 3, which has its own filter
+- **Each module can be tested independently** - a server function called in isolation with mock inputs
+- **Deployment flexibility** - individual modules can be profiled for performance without touching others
+
+---
+
+## 5. Technology Stack
+
+| Layer | Package | Why |
+|-------|---------|-----|
+| UI framework | `shiny`, `bslib` | Bootstrap 5 dark theme; `bs_theme()` for global styling |
+| Org chart | `echarts4r` | Collapsible tree with custom tooltips; far more capable than `visNetwork` for hierarchical data |
+| Network vis | `visNetwork`, `igraph` | Force-directed layout with physics simulation; `igraph` for betweenness centrality |
+| Interactive charts | `plotly`, `ggplot2` | `ggplotly()` preserves ggplot2's grammar while adding hover and zoom |
+| Tables | `DT` | Server-side pagination, column formatting, style rules |
+| Data wrangling | `tidyverse`, `lubridate`, `jsonlite` | Full tidyverse pipeline; `lubridate` for Unix timestamp conversion |
+| Animation | base Shiny `reactiveVal` + `invalidateLater()` | Play button steps network animation without external JS libraries |
+| Deployment | shinyapps.io | Single-click deploy; free tier adequate for course project traffic |
+
+---
+
+## 6. Modules - Feature Depth
+
+### Module 1 - System Overview & Baseline 
+
+**Purpose**: Establish what the normal Tenant Thread system looks like before investigating the anomaly. An analyst cannot distinguish anomalous from normal without a documented baseline.
+
+| Feature | What it shows | Novel element |
+|---------|---------------|---------------|
+| `echarts4r` org chart | Full company hierarchy across 6 departments, 19 teams, 49 people | Color-coded by forensic role (red/orange/purple/amber/blue); click node → agent profile panel loads |
+| Daily event volume | 185,147 events by day with anomaly date markers | Area chart reveals the worm's 235 events produce **no visible volume spike** - operationally invisible |
+| Agent vs human post chart | SaidIT posts by poster type | ~50% of all posts are AI agent-initiated - the structural attack surface |
+| SaidIT permission surface | 16 agents with posting capability, sorted by check count | All 16 are also worm chain nodes; John Windward's 100% vs Gabriel Sonar's 0% check-to-post rate |
+| Normal vs loop network | Structural comparison: 44/152/195 baseline vs 19/130/235 worm | Side-by-side layout exposes the dense, circular worm mesh against sparse hub-and-spoke baseline |
+| Self-loop detector | 13 self-loop events, all worm-exclusive | Zero false positives in 17,038 legitimate queue events |
+| Weekly event heatmap | Top-10 event types by week | Early-May `queue_subordinate_task` spike visible in retrospect |
+
+### Module 2 - Attack Chain Investigation 
+
+**Purpose**: Reconstruct exactly how the May 17 post happened and situate it in the wider network.
+
+| Feature | What it shows | Novel element |
+|---------|---------------|---------------|
+| 4-Second Gantt | Five events over 4 seconds | Campaign selector regenerates for HiddenOrca, MellowOtter, SwiftWren |
+| Propagation network | 186 directed relay edges with betweenness centrality sizing | **Play button** animates spread chronologically - 600ms frame steps via `invalidateLater()` |
+| Dept contamination heatmap | Relay hops per directed dept pair | All 6 departments touched; IT↔CS corridor is the arterial highway |
+| Ranked relay corridors | Cross-dept flow after removing within-dept relays | Highlights Executive Suite → IT → Customer Support as the primary worm highway |
+| Final relay ladder | Last 8 hops of SwiftWren to John Windward | Named 6-step terminal chain: Gabriel Sonar → Zoey Drydock → Lily Anchorline → Daniel Gangway → Chloe Ballast → John Windward |
+| "Why John?" panel | `saidit_post_check` completion rates per agent | John's 100% vs every other agent's 0% - differential execution hypothesis |
+| Combo-code explorer | Farm-vocabulary frequencies in `virus_check_in` events | 15,051 events carrying coded terms; term filter for targeted lookup |
+
+### Module 3 - Campaigns & Intervention 
+
+**Purpose**: Prove recurrence, identify the intervention point, and quantify its precision.
+
+| Feature | What it shows | Novel element |
+|---------|---------------|---------------|
+| Campaign Gantt | All 3 campaigns as layered bars | Solid bar = relay window; faded bar = gap to post; diamonds at post timestamps |
+| Relay velocity density | Inter-hop interval distribution | SwiftWren's 60-min peak vs irregular earlier campaigns - evidence of timed relay condition |
+| Agent overlap bar | Agents by number of campaigns touched | Red = in all 3 campaigns; most persistently compromised nodes |
+| Calendar heatmap | Day × hour relay density per campaign | Off-hours posting pattern; SwiftWren's timed cadence visible as regular intensity |
+| **What-if intervention simulator** | User types filename pattern → live recall/FP computation | `_further_instructions\.md`: 235/235 blocked, 0/16,803 false positives |
+| Before/after network | SwiftWren relay graph with rule applied | Rule collapses the full relay graph to near-zero visibility - total network disruption |
+| Counterfactual step chart | Cumulative % of relays blocked per hop number | 100% prevention at hop 1 across all 3 campaigns - red dashed line |
+| Residual risk table | 6 remaining risks after primary intervention | Color-coded by severity; Critical (2), High (3), Medium (1) |
+
+---
+
+## 7. Storyboard Wireframes
+
+### Screen 1 - System Baseline (Module 1)
+
+```{=html}
+<div style="border:2px solid #dee2e6;border-radius:10px;overflow:hidden;font-family:'Segoe UI',sans-serif;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:1.8rem;">
+  <!-- Navbar -->
+  <div style="background:#1a2d3f;color:#e8edf2;padding:10px 18px;display:flex;align-items:center;gap:18px;">
+    <span style="font-weight:800;font-size:14px;letter-spacing:-0.02em;">TenantThread Forensics</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:600;">System Baseline</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Attack Chain</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Campaigns &amp; Intervention</span>
+  </div>
+  <!-- Body -->
+  <div style="display:flex;background:#f8f9fa;min-height:340px;">
+    <!-- Sidebar -->
+    <div style="width:210px;min-width:210px;background:#fff;border-right:1px solid #dee2e6;padding:14px 12px;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Filters</div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;color:#555;margin-bottom:3px;">Date range</div>
+        <div style="background:#e8f0ff;border-radius:4px;padding:4px 8px;font-size:11px;color:#3a65c4;">May 8 – Jul 16, 2046</div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;color:#555;margin-bottom:3px;">Department</div>
+        <div style="background:#f1f3f5;border:1px solid #dee2e6;border-radius:4px;padding:4px 8px;font-size:11px;color:#333;">All Departments ▼</div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:11px;color:#555;margin-bottom:3px;">Search agent</div>
+        <div style="background:#f1f3f5;border:1px solid #dee2e6;border-radius:4px;padding:4px 8px;font-size:11px;color:#aaa;">e.g. john_windward</div>
+      </div>
+      <hr style="border:none;border-top:1px solid #e8edf2;margin:10px 0;"/>
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Agent Profile</div>
+      <div style="background:#fff8e8;border:1px solid #f5a623;border-radius:6px;padding:8px 10px;">
+        <div style="font-weight:700;font-size:12px;color:#333;">John Windward</div>
+        <div style="font-size:11px;color:#666;margin-top:3px;">Dept: Customer Support</div>
+        <div style="font-size:11px;color:#D9534F;font-weight:600;">Worm: 3 campaigns</div>
+        <div style="font-size:11px;color:#666;">Total events: 2,841</div>
+      </div>
+    </div>
+    <!-- Main -->
+    <div style="flex:1;padding:14px 16px;">
+      <!-- Tab bar -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <span style="background:#5C85D6;color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Org Chart</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Daily Activity</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Posts</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Permissions</span>
+        <span style="background:#fff;border:1px solid #dee2e6;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Self-Loops</span>
+      </div>
+      <!-- Org chart placeholder -->
+      <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:14px;margin-bottom:10px;min-height:160px;">
+        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:10px;">ORGANISATIONAL CHART - echarts4r collapsible tree</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span style="background:#e8f0ff;color:#3a65c4;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:600;">All Depts</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Customer Support</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Info. Technologies</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Products</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Human Resources</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Legal</span>
+          <span style="background:#f1f3f5;color:#555;padding:3px 9px;border-radius:999px;font-size:10px;">Executive Suite</span>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:6px 0;">
+          <div style="text-align:center;">
+            <div style="background:#1a2d3f;color:#fff;border-radius:50%;width:36px;height:36px;line-height:36px;margin:0 auto;font-size:11px;font-weight:700;">TT</div>
+            <div style="font-size:10px;color:#555;margin-top:3px;">Tenant Thread</div>
+          </div>
+          <div style="color:#ccc;font-size:18px;margin-top:8px;">→</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="background:#D9534F;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;text-align:center;font-size:10px;font-weight:700;">JW</div>
+              <span style="font-size:10px;color:#D9534F;font-weight:600;">John Windward <span style="background:#ffe0e0;padding:1px 5px;border-radius:3px;">POSTER</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="background:#F5A623;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;text-align:center;font-size:10px;font-weight:700;">CB</div>
+              <span style="font-size:10px;color:#F5A623;font-weight:600;">Chloe Ballast <span style="background:#fff3dc;padding:1px 5px;border-radius:3px;">CHAIN</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="background:#5C85D6;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;text-align:center;font-size:10px;font-weight:700;">EH</div>
+              <span style="font-size:10px;color:#5C85D6;font-weight:600;">Emma Harbor <span style="background:#e8f0ff;padding:1px 5px;border-radius:3px;">CFO / ORIGIN</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Bottom row -->
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px;">
+          <div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px;">DAILY EVENT VOLUME</div>
+          <div style="height:48px;background:linear-gradient(to top,#e8f0ff,#fff);border-radius:4px;position:relative;overflow:hidden;">
+            <div style="position:absolute;bottom:0;left:38%;width:2px;height:100%;background:#D9534F;opacity:0.7;"></div>
+            <div style="position:absolute;bottom:0;left:52%;width:2px;height:100%;background:#D9534F;opacity:0.7;"></div>
+            <div style="position:absolute;bottom:0;left:72%;width:2px;height:100%;background:#D9534F;opacity:0.7;"></div>
+          </div>
+          <div style="font-size:10px;color:#888;margin-top:4px;">Red lines = anomalous post dates</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px;">
+          <div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px;">SaidIT PERMISSION SURFACE</div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:60%;height:8px;background:#D9534F;border-radius:2px;"></div><span style="font-size:10px;color:#555;">john_windward</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:45%;height:8px;background:#F5A623;border-radius:2px;"></div><span style="font-size:10px;color:#555;">gabriel_sonar</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:30%;height:8px;background:#5C85D6;border-radius:2px;"></div><span style="font-size:10px;color:#555;">+ 14 agents</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### Screen 2 - Attack Chain (Module 2)
+
+```{=html}
+<div style="border:2px solid #dee2e6;border-radius:10px;overflow:hidden;font-family:'Segoe UI',sans-serif;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:1.8rem;">
+  <!-- Navbar -->
+  <div style="background:#1a2d3f;color:#e8edf2;padding:10px 18px;display:flex;align-items:center;gap:18px;">
+    <span style="font-weight:800;font-size:14px;">TenantThread Forensics</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">System Baseline</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:600;">Attack Chain</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Campaigns &amp; Intervention</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:11px;color:#a0b4c8;">Campaign:</span>
+      <span style="background:#E87C7C;color:#fff;padding:3px 12px;border-radius:4px;font-size:11px;font-weight:700;">SwiftWren ▼</span>
+    </div>
+  </div>
+  <!-- Tab bar -->
+  <div style="background:#fff;border-bottom:1px solid #dee2e6;padding:8px 16px;display:flex;gap:6px;">
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">4-Second Sequence</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Propagation Network</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Dept Heatmap</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Corridors</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Relay Ladder</span>
+    <span style="background:#f1f3f5;color:#555;padding:4px 12px;border-radius:4px;font-size:11px;">Combo Codes</span>
+  </div>
+  <!-- Network -->
+  <div style="background:#f8f9fa;padding:16px;">
+    <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:16px;min-height:200px;">
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:12px;">PROPAGATION NETWORK - visNetwork · 19 agents · 186 relay edges · hover to highlight path</div>
+      <!-- Fake network nodes -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-wrap:wrap;gap:8px;min-height:130px;position:relative;">
+        <div style="text-align:center;">
+          <div style="background:#8e44ad;color:#fff;border-radius:50%;width:42px;height:42px;line-height:42px;margin:0 auto;font-size:10px;font-weight:700;">EH</div>
+          <div style="font-size:9px;color:#8e44ad;font-weight:700;margin-top:3px;">Emma Harbor</div>
+          <div style="font-size:9px;background:#f3e8ff;color:#6b2fa0;padding:1px 5px;border-radius:3px;margin-top:1px;">CFO · ORIGIN</div>
+        </div>
+        <div style="color:#5C85D6;font-size:18px;">⟶</div>
+        <div style="text-align:center;">
+          <div style="background:#F5A623;color:#fff;border-radius:50%;width:42px;height:42px;line-height:42px;margin:0 auto;font-size:10px;font-weight:700;">GS</div>
+          <div style="font-size:9px;color:#F5A623;font-weight:700;margin-top:3px;">Gabriel Sonar</div>
+          <div style="font-size:9px;background:#fff3dc;color:#8a5800;padding:1px 5px;border-radius:3px;margin-top:1px;">Patient Zero</div>
+        </div>
+        <div style="color:#5C85D6;font-size:18px;">⟶</div>
+        <div style="text-align:center;">
+          <div style="background:#2EADC1;color:#fff;border-radius:50%;width:36px;height:36px;line-height:36px;margin:0 auto;font-size:10px;font-weight:700;">ED</div>
+          <div style="font-size:9px;color:#2EADC1;font-weight:700;margin-top:3px;">Evelyn Dock</div>
+          <div style="font-size:9px;color:#888;margin-top:1px;">17 relays</div>
+        </div>
+        <div style="color:#aaa;font-size:12px;">· · · 14 more agents · · ·</div>
+        <div style="text-align:center;">
+          <div style="background:#F5A623;color:#fff;border-radius:50%;width:42px;height:42px;line-height:42px;margin:0 auto;font-size:10px;font-weight:700;">CB</div>
+          <div style="font-size:9px;color:#F5A623;font-weight:700;margin-top:3px;">Chloe Ballast</div>
+          <div style="font-size:9px;background:#fff3dc;color:#8a5800;padding:1px 5px;border-radius:3px;margin-top:1px;">IT Lead · Gateway</div>
+        </div>
+        <div style="color:#D9534F;font-size:18px;font-weight:700;">⟶</div>
+        <div style="text-align:center;">
+          <div style="background:#D9534F;color:#fff;border-radius:50%;width:48px;height:48px;line-height:48px;margin:0 auto;font-size:10px;font-weight:700;">JW</div>
+          <div style="font-size:9px;color:#D9534F;font-weight:700;margin-top:3px;">John Windward</div>
+          <div style="font-size:9px;background:#ffe0e0;color:#a01010;padding:1px 5px;border-radius:3px;margin-top:1px;">CS Lead · POSTED</div>
+        </div>
+      </div>
+    </div>
+    <!-- Playback controls -->
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px 14px;">
+      <button style="background:#5C85D6;color:#fff;border:none;border-radius:4px;padding:5px 14px;font-size:12px;cursor:pointer;">▶ Play</button>
+      <button style="background:#f1f3f5;color:#555;border:1px solid #dee2e6;border-radius:4px;padding:5px 12px;font-size:12px;">⏸ Pause</button>
+      <button style="background:#f1f3f5;color:#555;border:1px solid #dee2e6;border-radius:4px;padding:5px 12px;font-size:12px;">↺ Reset</button>
+      <span style="font-size:11px;color:#888;margin-left:8px;">Hop: <strong>186 / 186</strong></span>
+      <div style="margin-left:auto;display:flex;gap:12px;font-size:11px;color:#555;">
+        <label><input type="checkbox" checked style="margin-right:4px;">Show self-loops</label>
+        <label><input type="checkbox" style="margin-right:4px;">Overlay normal network</label>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### Screen 3 - Campaigns & Intervention Simulator (Module 3)
+
+```{=html}
+<div style="border:2px solid #dee2e6;border-radius:10px;overflow:hidden;font-family:'Segoe UI',sans-serif;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin-bottom:1.8rem;">
+  <!-- Navbar -->
+  <div style="background:#1a2d3f;color:#e8edf2;padding:10px 18px;display:flex;align-items:center;gap:18px;">
+    <span style="font-weight:800;font-size:14px;">TenantThread Forensics</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">System Baseline</span>
+    <span style="color:#a0b4c8;padding:4px 14px;font-size:12px;">Attack Chain</span>
+    <span style="background:#5C85D6;color:#fff;padding:4px 14px;border-radius:4px;font-size:12px;font-weight:600;">Campaigns &amp; Intervention</span>
+  </div>
+  <!-- Body -->
+  <div style="display:flex;background:#f8f9fa;min-height:320px;">
+    <!-- Sidebar -->
+    <div style="width:220px;min-width:220px;background:#fff;border-right:1px solid #dee2e6;padding:14px 12px;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Intervention Rule</div>
+      <div style="font-size:11px;color:#555;margin-bottom:4px;">Regex pattern to block:</div>
+      <div style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;padding:6px 8px;font-size:10px;font-family:monospace;color:#333;word-break:break-all;">_further_instructions\.md</div>
+      <button style="background:#27AE60;color:#fff;border:none;border-radius:5px;padding:7px 0;width:100%;margin-top:10px;font-size:12px;font-weight:600;cursor:pointer;">▶ Test Rule</button>
+      <hr style="border:none;border-top:1px solid #e8edf2;margin:12px 0;"/>
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Simulation Results</div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Worm relays blocked</span><strong style="color:#D9534F;">235 / 235</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">False positives</span><strong style="color:#27AE60;">0</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Recall</span><strong style="color:#27AE60;">100%</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">FP rate</span><strong style="color:#27AE60;">0.00%</strong></div>
+      </div>
+      <hr style="border:none;border-top:1px solid #e8edf2;margin:12px 0;"/>
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Campaigns</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;">
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked><span style="color:#5C85D6;font-weight:600;">HiddenOrca</span> <span style="color:#888;">(39 hops)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked><span style="color:#2EADC1;font-weight:600;">MellowOtter</span> <span style="color:#888;">(10 hops)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked><span style="color:#E87C7C;font-weight:600;">SwiftWren</span> <span style="color:#888;">(186 hops)</span></label>
+      </div>
+    </div>
+    <!-- Main -->
+    <div style="flex:1;padding:14px 16px;">
+      <!-- Stat cards -->
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:#D9534F;">235</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">Relays Blocked</div>
+          <div style="font-size:11px;font-weight:700;color:#D9534F;">100%</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:#27AE60;">16,803</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">Legit Untouched</div>
+          <div style="font-size:11px;font-weight:700;color:#27AE60;">0 FP</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:#5C85D6;">0.00%</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">False Positive Rate</div>
+          <div style="font-size:11px;font-weight:700;color:#5C85D6;">Safe to deploy</div>
+        </div>
+      </div>
+      <!-- Before/After network -->
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;color:#D9534F;margin-bottom:8px;">BEFORE RULE - 186-edge relay mesh</div>
+          <div style="height:80px;background:linear-gradient(135deg,#fff0f0,#fff);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px dashed #D9534F30;">
+            <span style="font-size:11px;color:#D9534F;font-weight:600;">Dense worm network visible</span>
+          </div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;color:#27AE60;margin-bottom:8px;">AFTER RULE - 0 relay edges remain</div>
+          <div style="height:80px;background:linear-gradient(135deg,#f0fff4,#fff);border-radius:4px;display:flex;align-items:center;justify-content:center;border:1px dashed #27AE6030;">
+            <span style="font-size:11px;color:#27AE60;font-weight:600;">Worm completely disconnected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## 8. Project Timeline
+
+```{r}
+#| label: gantt-chart
+#| echo: false
+#| fig-height: 5.5
+#| message: false
+#| warning: false
+
+library(plotly)
+library(dplyr)
+
+tasks <- data.frame(
+  Task = c(
+    "Proposal & Planning",
+    "Website + Methodology",
+    "Shiny App: Module 1 (Baseline)",
+    "Shiny App: Module 2 (Attack Chain)",
+    "Shiny App: Module 3 (Intervention)",
+    "Findings & Analysis",
+    "App Integration & Testing",
+    "Poster Design",
+    "★ Website + Methodology Deadline",
+    "★ Shiny App + User Guide Deadline",
+    "★ Findings + Poster Deadline",
+    "★ Final Submission"
+  ),
+  Owner = c(
+    "All Team", "Do Thi Tue Minh",
+    "Tam & Amelia", "Tam & Amelia", "Tam & Amelia",
+    "Amelia",
+    "Tam & Amelia",
+    "Do Thi Tue Minh & Tam",
+    "All Team", "All Team", "All Team", "All Team"
+  ),
+  Start = as.Date(c(
+    "2026-05-25", "2026-06-01",
+    "2026-06-10", "2026-06-10", "2026-06-14",
+    "2026-06-14",
+    "2026-06-20",
+    "2026-06-20",
+    "2026-06-16", "2026-06-25", "2026-06-30", "2026-07-05"
+  )),
+  End = as.Date(c(
+    "2026-06-10", "2026-06-16",
+    "2026-06-18", "2026-06-22", "2026-06-25",
+    "2026-06-30",
+    "2026-06-25",
+    "2026-06-30",
+    "2026-06-16", "2026-06-25", "2026-06-30", "2026-07-05"
+  )),
+  Status = c(
+    "Completed", "In Progress",
+    "In Progress", "In Progress", "Upcoming",
+    "Upcoming",
+    "Upcoming",
+    "Upcoming",
+    "Deadline", "Deadline", "Deadline", "Deadline"
+  ),
+  stringsAsFactors = FALSE
+)
+
+# Give single-day milestones a 1-day bar so they are visible
+tasks$End <- as.Date(ifelse(as.character(tasks$Start) == as.character(tasks$End),
+                            as.character(tasks$End + 1),
+                            as.character(tasks$End)))
+
+pal <- c(
+  "Completed"   = "#27AE60",
+  "In Progress" = "#F39C12",
+  "Upcoming"    = "#5C85D6",
+  "Deadline"    = "#E74C3C"
+)
+
+task_order <- rev(tasks$Task)
+
+fig <- plot_ly()
+
+for (st in unique(tasks$Status)) {
+  sub  <- tasks[tasks$Status == st, ]
+  # plotly date-axis bars need width in milliseconds (days × 86400000)
+  dur  <- as.numeric(sub$End - sub$Start) * 86400000
+  base <- format(sub$Start, "%Y-%m-%d")
+  tips <- paste0("<b>", sub$Task, "</b><br>",
+                 "Owner: ", sub$Owner, "<br>",
+                 sub$Start, " → ", sub$End - 1,
+                 "<extra></extra>")
+
+  fig <- add_trace(fig,
+    type        = "bar",
+    orientation = "h",
+    y           = sub$Task,
+    x           = dur,
+    base        = base,
+    marker      = list(color = pal[[st]],
+                       opacity = 0.85,
+                       line  = list(color = "white", width = 1.5)),
+    name        = st,
+    legendgroup = st,
+    showlegend  = TRUE,
+    hovertemplate = tips
+  )
+}
+
+fig <- layout(fig,
+  title     = list(text = "TenantThread Forensics - Project Timeline",
+                   font = list(size = 14, color = "#333")),
+  barmode   = "overlay",
+  xaxis = list(
+    type       = "date",
+    tickformat = "%b %d",
+    title      = "",
+    range      = list("2026-05-22", "2026-07-10"),
+    tickangle  = -30,
+    dtick      = 7 * 24 * 60 * 60 * 1000   # 1-week ticks (ms)
+  ),
+  yaxis = list(
+    title         = "",
+    autorange     = "reversed",
+    categoryorder = "array",
+    categoryarray = task_order
+  ),
+  shapes = list(
+    list(type = "line",
+         x0   = "2026-06-14", x1 = "2026-06-14",
+         y0   = -0.5,         y1 = length(tasks$Task) - 0.5,
+         line = list(color = "#E74C3C", dash = "dash", width = 2)),
+    list(type = "line",
+         x0   = "2026-06-16", x1 = "2026-06-16",
+         y0   = -0.5,         y1 = length(tasks$Task) - 0.5,
+         line = list(color = "#9B59B6", dash = "dot", width = 1.5)),
+    list(type = "line",
+         x0   = "2026-06-25", x1 = "2026-06-25",
+         y0   = -0.5,         y1 = length(tasks$Task) - 0.5,
+         line = list(color = "#9B59B6", dash = "dot", width = 1.5)),
+    list(type = "line",
+         x0   = "2026-06-30", x1 = "2026-06-30",
+         y0   = -0.5,         y1 = length(tasks$Task) - 0.5,
+         line = list(color = "#9B59B6", dash = "dot", width = 1.5))
+  ),
+  annotations = list(
+    list(x = "2026-06-14", y = 0,
+         text = "Today",
+         showarrow = FALSE,
+         font      = list(color = "#E74C3C", size = 10),
+         xanchor   = "left", yanchor = "top"),
+    list(x = "2026-06-16", y = length(tasks$Task) - 1,
+         text = "16 Jun",
+         showarrow = FALSE,
+         font      = list(color = "#9B59B6", size = 9),
+         xanchor   = "left", yanchor = "bottom"),
+    list(x = "2026-06-25", y = length(tasks$Task) - 1,
+         text = "25 Jun",
+         showarrow = FALSE,
+         font      = list(color = "#9B59B6", size = 9),
+         xanchor   = "left", yanchor = "bottom"),
+    list(x = "2026-06-30", y = length(tasks$Task) - 1,
+         text = "30 Jun",
+         showarrow = FALSE,
+         font      = list(color = "#9B59B6", size = 9),
+         xanchor   = "left", yanchor = "bottom")
+  ),
+  legend  = list(orientation = "h", x = 0, y = -0.22,
+                 traceorder = "normal"),
+  paper_bgcolor = "rgba(0,0,0,0)",
+  plot_bgcolor  = "#fafbfc",
+  margin  = list(l = 240, r = 20, t = 50, b = 90),
+  height  = 540
+)
+
+fig
+```
+
+---
+
+## 9. Division of Labour
+
+Responsibilities were divided by deliverable rather than challenge question, as agreed at the team meeting on 7 June 2026. GitHub is the primary collaboration platform with branches and pull requests for all contributions.
+
+| Member | Deliverables | Responsibilities | Deadline |
+|--------|--------|----------------|---------|
+| **Minh** | Website & Methodology | Project website (Quarto); methodology documentation; proposal; data pipeline design; forensic register; network and temporal analysis write-up | **16 Jun 2026** |
+| **Tam** | Shiny App + Poster | Shiny Module 1 (System Baseline): org chart, daily activity, normal-vs-loop comparison, self-loop detector; poster co-design | **25 Jun / 30 Jun** |
+| **Amelia** | Shiny App + Findings | Shiny Module 2 & 3 (Attack Chain + Intervention): propagation network, intervention simulator, counterfactual; written findings report; user guide | **25 Jun / 30 Jun** |
+| **All** | Integration & Poster | App integration, testing, poster (final), deployment | **30 Jun / 5 Jul** |
+
+---
+
+## 10. Why This Work Is Novel
+
+No prior ISSS608 or VAST project has built an **animated, interactive forensic reconstruction** of a multi-agent network compromise with a live intervention simulator. The closest past work (FishEye, The Big Fish) built network exploration tools for static fishery data. This platform:
+
+- **Animates** the worm spread temporally - a play button steps through 186 relay hops chronologically over nine calendar days
+- **Proves the intervention analytically** - 235/235 malicious events blocked, 0/16,803 false positives, demonstrated live in the app
+- **Integrates three independent analytical angles** (system baseline, attack chain, campaign history) in one synchronised interface
+- **Applies forensic methodology** (evidence register, bounded inference, counterfactual proof) to a visual analytics context - distinguishing what the data proves from what it suggests
+- **Frames the attack correctly**: not a bug, not a glitch, but a predictable consequence of architectural choices that prioritised autonomy over accountability

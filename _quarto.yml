@@ -1,0 +1,52 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "TenantThread Forensics"
+  description: "ISSS608 Visual Analytics | VAST Challenge 2026 MC2 | Forensic Investigation of a Prompt-Injection Worm"
+
+  navbar:
+    background: dark
+    foreground: light
+    search: true
+    left:
+      - href: index.qmd
+        text: Home
+      - href: proposal.qmd
+        text: Proposal
+      - href: methodology.qmd
+        text: Methodology
+      - href: analysis.qmd
+        text: Analysis
+      - href: poster.qmd
+        text: Poster
+      - href: userguide.qmd
+        text: User Guide
+    right:
+      - text: "Launch Shiny App"
+        href: "https://comingsoonshinyapps.io/mc2-forensics/"
+        icon: box-arrow-up-right
+
+  page-footer:
+    center: |
+      ISSS608 Visual Analytics · AY2025-26 April Term · Group Project
+      [VAST Challenge 2026 MC2](https://vast-challenge.github.io/2026/MC2.html)
+
+format:
+  html:
+    theme: flatly
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show code"
+    smooth-scroll: true
+    page-layout: full
+    link-external-newwindow: true
+
+execute:
+  warning: false
+  message: false
+  echo: true
+  freeze: true
