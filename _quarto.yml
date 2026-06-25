@@ -25,7 +25,7 @@ website:
         text: User Guide
     right:
       - text: "Launch Shiny App"
-        href: "https://comingsoonshinyapps.io/mc2-forensics/"
+        href: "https://a-rosa.shinyapps.io/tenantthread-forensics/"
         icon: box-arrow-up-right
 
   page-footer:

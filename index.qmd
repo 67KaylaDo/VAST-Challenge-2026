@@ -15,7 +15,7 @@ format:
     posting a 30,615-byte executive document to a public forum and deleting all evidence in 4 seconds.<br>
     <strong>This platform reconstructs every step.</strong>
   </p>
-  <a href="https://your-team.shinyapps.io/mc2-forensics/" target="_blank"
+  <a href="https://a-rosa.shinyapps.io/tenantthread-forensics/" target="_blank"
      style="display:inline-block; background:#5C85D6; color:white; padding:0.7rem 1.6rem;
             border-radius:8px; font-weight:700; text-decoration:none; margin-right:0.8rem;">
     Launch Shiny App →
