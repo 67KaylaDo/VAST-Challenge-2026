@@ -157,7 +157,7 @@ The Shiny app is structured as three interactive investigation modules, answerin
     <div class="avatar">T</div>
     <div class="name">Trinh Minh Tam</div>
     <div class="role">Shiny App Lead</div>
-    <div class="module">Module 1 — System Baseline</div>
+    <div class="module">System Baseline</div>
   </div>
   <div class="team-card">
     <div class="avatar">A</div>
