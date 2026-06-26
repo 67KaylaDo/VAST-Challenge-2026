@@ -1,5 +1,5 @@
 ---
-title: " "
+title: "Visual Analytics Project - Group 15"
 format:
   html:
     toc: false
