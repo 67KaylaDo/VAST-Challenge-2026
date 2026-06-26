@@ -158,14 +158,86 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div style="text-align:center; padding:5rem 2rem; color:#888;">
-  <div style="font-size:3rem; margin-bottom:1rem;">📖</div>
-  <h2 style="color:#555;" class="anchored">Coming Soon</h2>
-  <p>The Shiny app user guide will be published here once the application is deployed.</p>
-  <p style="font-size:0.9rem; color:#aaa;">Due: 5 July 2026</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>The TenantThread Forensics Dashboard is an interactive visual analytics application built to support forensic investigation of the TenantThread AI worm propagation incident. Using data spanning three attack campaigns — HiddenOrca, MellowOtter, and SwiftWren — the dashboard allows analysts to trace how the worm spread between AI agents, reconstruct attack chains, and evaluate potential interventions.</p>
+<p>This user guide covers the Introduction page and the two tabs developed by Amelia: Tab 1 (System Overview) and Tab 2 (Attack Chain Reconstruction). Tabs 3 and 4 are covered separately by Tam.</p>
+<section id="how-to-access" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-access">How to Access</h2>
+<p>Open any modern web browser and navigate to:</p>
+<p>https://a-rosa.shinyapps.io/tenantthread-forensics/</p>
+<p>No login or installation is required. The application loads directly in-browser. Allow a few seconds on first load as the data initialises in the background.</p>
+</section>
+<section id="application-layout" class="level2">
+<h2 class="anchored" data-anchor-id="application-layout">Application Layout</h2>
+<p>The dashboard uses a dark navy sidebar layout. The left sidebar contains the application title and the main navigation menu. Clicking a menu item switches the main content panel on the right. The four tabs are:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 22%">
+<col style="width: 54%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tab</th>
+<th>Owner</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tab 1 – System Overview</td>
+<td>Amelia</td>
+<td>High-level summary of all events, actors, and timeline across the three campaigns</td>
+</tr>
+<tr class="even">
+<td>Tab 2 – Attack Chain Reconstruction</td>
+<td>Amelia</td>
+<td>Step-by-step backward chain reconstruction tracing how the worm reached each terminal actor</td>
+</tr>
+<tr class="odd">
+<td>Tab 3 – Campaign History</td>
+<td>Tam</td>
+<td>Temporal patterns and recurrence analysis across the three campaigns</td>
+</tr>
+<tr class="even">
+<td>Tab 4 – Intervention Design</td>
+<td>Tam</td>
+<td>Counterfactual simulation and proposed fix for disrupting worm propagation</td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/user_guide1.png" class="img-fluid figure-img"></p>
+<figcaption>Default landing page</figcaption>
+</figure>
 </div>
+</section>
+</section>
+<section id="tab-1-sytem-overview" class="level1">
+<h1>Tab 1: Sytem Overview</h1>
+<p>The System Overview tab gives analysts a bird’s-eye view of the TenantThread incident. It presents the full event timeline, a breakdown of events by campaign and actor type, and a summary statistics table — all filterable by campaign. This tab is intended as the starting point for any investigation, helping the analyst orient themselves before drilling into a specific chain in Tab 2.</p>
+<section id="event-timeline-plot" class="level2">
+<h2 class="anchored" data-anchor-id="event-timeline-plot">Event Timeline Plot</h2>
+<p>Each point represents a single logged event in the dataset. Events are plotted on the x-axis (timestamp) and coloured by campaign. Vertical dashed lines mark key anomaly dates identified during analysis.</p>
+<p><img src=".png" class="img-fluid"></p>
+<p>[1] Hover Tooltip — Hover over any point to see a pop-up showing the event’s timestamp, actor name, action type, and campaign. This tooltip is interactive and powered by Plotly.</p>
+<p>[2] Zoom &amp; Pan — Use the Plotly toolbar that appears in the top-right corner of the chart to zoom into a specific time window, pan across the timeline, or reset the view to default.</p>
+</section>
+<section id="event-count-bar-chart" class="level2">
+<h2 class="anchored" data-anchor-id="event-count-bar-chart">Event Count Bar Chart</h2>
+<p>Displays the number of events per campaign (or per actor, depending on the current filter selection). Bars are colour-coded to match the timeline above for easy cross-reference.</p>
+<p><img src=".png" class="img-fluid"></p>
+<p>Hover for Count — Hovering over a bar shows the exact event count for that category.</p>
+</section>
+</section>
+<section id="tab-2-attack-chain-reconstruction" class="level1">
+<h1>Tab 2: Attack Chain Reconstruction</h1>
+<p>The Attack Chain Reconstruction tab is the analytical centrepiece of the dashboard. It allows the analyst to select any terminal actor — an AI agent that was ultimately compromised by the TenantThread worm — and reconstruct the full backward propagation chain showing exactly which agents passed the worm, and in what sequence, before it reached that target. Both an interactive network graph and a step-by-step event table are provided.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
