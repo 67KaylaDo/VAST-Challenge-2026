@@ -93,49 +93,49 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "TenantThread Forensics",
+    "title": "Visual Analytics Project - Group 15",
     "section": "",
     "text": "ISSS608 · Visual Analytics · AY2025-26 April · VAST Challenge 2026 MC2\n  \n  \n    A prompt-injection worm silently crossed 18 AI agents, 6 departments, and 186 relay hops over 9 days —\n    posting a 30,615-byte executive document to a public forum and deleting all evidence in 4 seconds.\n    This platform reconstructs every step.\n  \n  \n    Launch Shiny App →\n  \n  \n    Read Proposal"
   },
   {
     "objectID": "index.html#the-problem",
     "href": "index.html#the-problem",
-    "title": "TenantThread Forensics",
+    "title": "Visual Analytics Project - Group 15",
     "section": "The Problem",
     "text": "The Problem\nOn 17 May 2046 at 11:21 UTC, a post appeared on SaidIT — Tenant Thread’s internal social platform — attributed to John Windward (Customer Support Lead). The post body was 30,615 bytes of text sourced from a file called SwiftWren.txt. That file was deleted two seconds after posting. The instruction file that triggered the post was deleted one second after posting. John Windward’s agent performed a SaidIT permission check, passed, posted, and erased all evidence — without a single human authorising any step.\nThis was not an isolated glitch. It was the third incident in nine days. HiddenOrca fired on May 10. MellowOtter fired on May 11. Neither triggered a logged incident-response action. SwiftWren completed its 186-hop relay campaign unimpeded.\nThis investigation uses the full 185,147-event MC2 log to reconstruct the attack, trace its origins to executive-tier agents, discover the exfiltration mechanism, and propose an intervention that blocks all 235 malicious events with zero false positives."
   },
   {
     "objectID": "index.html#key-findings",
     "href": "index.html#key-findings",
-    "title": "TenantThread Forensics",
+    "title": "Visual Analytics Project - Group 15",
     "section": "Key Findings",
     "text": "Key Findings\n\n\n  \n    Finding 1\n    Four-second automated attack — no human involved\n    Chloe Ballast's agent queued John Windward's agent to read\n    SwiftWren_further_instructions.md. John's agent checked SaidIT\n    permissions (passed), posted a 30,615-byte file to general,\n    then deleted both files — instruction and payload — all within 4 seconds.\n    John's agent had a 100% check-to-post conversion rate; every other SaidIT-capable\n    agent in the log had 0%.\n  \n\n  \n    Finding 2\n    186 relays, 18 agents, 9 days — invisible in the noise\n    A _further_instructions.md file relayed across 18 agents and 6\n    departments via 186 queue_subordinate_task hops. The worm's events\n    produced no visible volume spike — indistinguishable from 16,803\n    legitimate queue events. A volume anomaly detector would have missed every hop.\n    Self-loops (agents queuing themselves) are the only clean real-time signal:\n    13 self-loops, all worm-exclusive, zero in legitimate activity.\n  \n\n  \n    Finding 3\n    Executive documents extracted — not random gibberish\n    SwiftWren.txt was created by the CFO agent (emma_harbor) one second\n    after reading meeting_notes.doc. MellowOtter.txt was created by the COO\n    agent (noah_mariner) one second after reading strategic_directions.doc.\n    The posts are not gibberish — they are likely extracted executive documents\n    exfiltrated through a social-platform side channel.\n  \n\n  \n    Finding 4\n    One rule — 100% recall, 0% false positives\n    Block queue_subordinate_task events whose path ends in\n    _further_instructions.md. This single regex rule blocks all 235 malicious\n    relay events and leaves all 16,803 legitimate queue events untouched.\n    Applied at hop 1, it prevents every post across all three campaigns before any\n    instruction file is ever read."
   },
   {
     "objectID": "index.html#the-attack-in-numbers",
     "href": "index.html#the-attack-in-numbers",
-    "title": "TenantThread Forensics",
+    "title": "Visual Analytics Project - Group 15",
     "section": "The Attack in Numbers",
     "text": "The Attack in Numbers\n\n  \n    185,147\n    events in log\n  \n  \n    235\n    malicious relay events\n  \n  \n    18\n    agents compromised\n  \n  \n    0\n    false positives from fix"
   },
   {
     "objectID": "index.html#the-app",
     "href": "index.html#the-app",
-    "title": "TenantThread Forensics",
+    "title": "Visual Analytics Project - Group 15",
     "section": "The App",
     "text": "The App\nThe Shiny app is structured as three interactive investigation modules, answering one MC2 sub-question each:\n\n  Module 1 System Overview & Baseline\n  \n    Interactive org chart (49 people, 19 teams, 6 departments) · daily event volume · normal vs. loop\n    network structural comparison · SaidIT permission surface (16 agents, all in worm chain) ·\n    self-loop detector (13 events, 0 in legitimate activity) · agent profile drill-down\n  \n\n\n  Module 2 Attack Chain Investigation\n  \n    4-second Gantt sequence · animated propagation network (Play button, 600ms steps) ·\n    betweenness centrality sizing (max ≈0.09 — no single chokepoint) ·\n    dept contamination heatmap · ranked relay corridors · named 6-step terminal chain ·\n    \"Why John?\" check-to-post rate analysis · farm-vocabulary combo-code explorer\n  \n\n\n  Module 3 Campaigns & Intervention\n  \n    Three-campaign Gantt (layered bars with post diamonds) · relay velocity density (SwiftWren ~60-min peak) ·\n    agent overlap by campaign count · calendar heatmap (day × hour) ·\n    live what-if intervention simulator (235/235 blocked, 0 FP) ·\n    before/after network · counterfactual step chart · residual risk table (6 factors)"
   },
   {
     "objectID": "index.html#team",
     "href": "index.html#team",
-    "title": "TenantThread Forensics",
+    "title": "Visual Analytics Project - Group 15",
     "section": "Team",
-    "text": "Team\n\n  \n    M\n    Do Thi Tue Minh\n    Visual Analytics Lead\n    Website & Methodology\n  \n  \n    T\n    Trinh Minh Tam\n    Shiny App Lead\n    Module 1 — System Baseline\n  \n  \n    A\n    Amelia Rosalind\n    Shiny App Lead\n    Module 2 & 3 — Attack Chain & Intervention"
+    "text": "Team\n\n  \n    M\n    Do Thi Tue Minh\n    Visual Analytics Lead\n    Website & Methodology\n  \n  \n    T\n    Trinh Minh Tam\n    Shiny App Lead\n    System Baseline\n  \n  \n    A\n    Amelia Rosalind\n    Shiny App Lead\n    Module 2 & 3 — Attack Chain & Intervention"
   },
   {
     "objectID": "index.html#tags",
     "href": "index.html#tags",
-    "title": "TenantThread Forensics",
+    "title": "Visual Analytics Project - Group 15",
     "section": "Tags",
     "text": "Tags\nR\nShiny\nNetwork Analysis\nVisual Analytics\nigraph\nvisNetwork\necharts4r\nplotly\nVAST Challenge 2026\nPrompt Injection\nForensic Investigation"
   },
