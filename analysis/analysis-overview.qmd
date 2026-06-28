@@ -14,7 +14,7 @@ format:
 
 This is the first of three analysis pages reconstructing the prompt-injection worm at Tenant Thread. It answers the implicit question that every later finding depends on: **what does the normal system look like?** Before the attack chain can mean anything, we need the organisational structure, the baseline event rhythm, and the posting behaviour the worm hid inside.
 
-The full data-preparation pipeline — JSON normalisation, feature engineering, and the design decisions behind each derived object — is documented separately on the [Methodology](methodology.qmd) page. This page begins from the prepared data and presents findings only.
+The full data-preparation pipeline — JSON normalisation, feature engineering, and the design decisions behind each derived object — is documented separately on the [Methodology](../methodology.qmd) page. This page begins from the prepared data and presents findings only.
 
 All visuals below are taken from **Tab 1 (System Overview)** of the [Shiny dashboard](https://a-rosa.shinyapps.io/tenantthread-forensics/), where each chart is interactive.
 

@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-06-10">
 
-<title>Analysis 2 — Attack Chain &amp; Post Meaning – TenantThread Forensics</title>
+<title>readme-screenshots – TenantThread Forensics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -24,26 +23,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-704d1694b31487f23bfb84567679a24b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-704d1694b31487f23bfb84567679a24b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -74,7 +108,7 @@ ul.task-list li input[type="checkbox"] {
 <style>html{ scroll-behavior: smooth; }</style>
 
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -84,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">TenantThread Forensics</span>
     </a>
   </div>
@@ -95,15 +129,15 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../proposal.html"> 
+    <a class="nav-link" href="./proposal.html"> 
 <span class="menu-text">Proposal</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../methodology.html"> 
+    <a class="nav-link" href="./methodology.html"> 
 <span class="menu-text">Methodology</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -112,25 +146,25 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-analysis">    
         <li>
-    <a class="dropdown-item" href="../analysis/analysis-overview.html">
+    <a class="dropdown-item" href="./analysis/analysis-overview.html">
  <span class="dropdown-text">System Overview &amp; Baseline</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../analysis/analysis-attack-chain.html">
+    <a class="dropdown-item" href="./analysis/analysis-attack-chain.html">
  <span class="dropdown-text">Attack Chain &amp; Post Meaning</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../analysis/analysis-intervention.html">
+    <a class="dropdown-item" href="./analysis/analysis-intervention.html">
  <span class="dropdown-text">Campaigns &amp; Intervention</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../poster.html"> 
+    <a class="nav-link" href="./poster.html"> 
 <span class="menu-text">Poster</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../userguide.html"> 
+    <a class="nav-link" href="./userguide.html"> 
 <span class="menu-text">User Guide</span></a>
   </li>  
 </ul>
@@ -156,226 +190,176 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
-  <li><a href="#the-four-second-attack-sequence" id="toc-the-four-second-attack-sequence" class="nav-link" data-scroll-target="#the-four-second-attack-sequence"><span class="header-section-number">2</span> The Four-Second Attack Sequence</a></li>
-  <li><a href="#worm-propagation-network" id="toc-worm-propagation-network" class="nav-link" data-scroll-target="#worm-propagation-network"><span class="header-section-number">3</span> Worm Propagation Network</a></li>
-  <li><a href="#relay-chain-sender-receiver-table" id="toc-relay-chain-sender-receiver-table" class="nav-link" data-scroll-target="#relay-chain-sender-receiver-table"><span class="header-section-number">4</span> Relay Chain — Sender / Receiver Table</a></li>
-  <li><a href="#self-loop-detection-signal" id="toc-self-loop-detection-signal" class="nav-link" data-scroll-target="#self-loop-detection-signal"><span class="header-section-number">5</span> Self-Loop Detection Signal</a></li>
-  <li><a href="#department-level-contamination" id="toc-department-level-contamination" class="nav-link" data-scroll-target="#department-level-contamination"><span class="header-section-number">6</span> Department-Level Contamination</a></li>
-  <li><a href="#what-the-posts-mean" id="toc-what-the-posts-mean" class="nav-link" data-scroll-target="#what-the-posts-mean"><span class="header-section-number">7</span> What the Posts Mean</a></li>
-  <li><a href="#where-this-leads" id="toc-where-this-leads" class="nav-link" data-scroll-target="#where-this-leads"><span class="header-section-number">8</span> Where this leads</a></li>
+  <li><a href="#analysis-pages-screenshot-guide" id="toc-analysis-pages-screenshot-guide" class="nav-link active" data-scroll-target="#analysis-pages-screenshot-guide">Analysis Pages — Screenshot Guide</a>
+  <ul class="collapse">
+  <li><a href="#where-things-live" id="toc-where-things-live" class="nav-link" data-scroll-target="#where-things-live">Where things live</a></li>
+  <li><a href="#naming-convention" id="toc-naming-convention" class="nav-link" data-scroll-target="#naming-convention">Naming convention</a>
+  <ul class="collapse">
+  <li><a href="#page-1-analysis-overview.qmd-tab-1-system-overview" id="toc-page-1-analysis-overview.qmd-tab-1-system-overview" class="nav-link" data-scroll-target="#page-1-analysis-overview.qmd-tab-1-system-overview">Page 1 — <code>analysis-overview.qmd</code> (Tab 1: System Overview)</a></li>
+  <li><a href="#page-2-analysis-attack-chain.qmd-tab-2-attack-chain" id="toc-page-2-analysis-attack-chain.qmd-tab-2-attack-chain" class="nav-link" data-scroll-target="#page-2-analysis-attack-chain.qmd-tab-2-attack-chain">Page 2 — <code>analysis-attack-chain.qmd</code> (Tab 2: Attack Chain)</a></li>
+  <li><a href="#page-3-analysis-intervention.qmd-tabs-3-4-campaign-history-intervention" id="toc-page-3-analysis-intervention.qmd-tabs-3-4-campaign-history-intervention" class="nav-link" data-scroll-target="#page-3-analysis-intervention.qmd-tabs-3-4-campaign-history-intervention">Page 3 — <code>analysis-intervention.qmd</code> (Tabs 3 &amp; 4: Campaign History + Intervention)</a></li>
+  </ul></li>
+  <li><a href="#adding-a-screenshot-in-the-page-if-you-add-a-new-chart" id="toc-adding-a-screenshot-in-the-page-if-you-add-a-new-chart" class="nav-link" data-scroll-target="#adding-a-screenshot-in-the-page-if-you-add-a-new-chart">Adding a screenshot in the page (if you add a new chart)</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full column-body" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Analysis 2 — Attack Chain &amp; Post Meaning</h1>
-<p class="subtitle lead">How the May 17 post was made, and what the posts actually contained</p>
-</div>
+<main class="content column-page-left" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
-<div class="quarto-title-meta column-body">
 
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">June 10, 2026</p>
-    </div>
-  </div>
-  
-    <div>
-    <div class="quarto-title-meta-heading">Modified</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date-modified">June 28, 2026</p>
-    </div>
-  </div>
-    
-  </div>
-  
-
-
-</header>
-
-
-<section id="overview" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1</span> Overview</h2>
-<p>This page answers MC2 Tasks 1 and 2: <strong>how did the anomalous post happen, and what do the posts mean?</strong> The two are tightly coupled — the attack chain is what delivered the payload, so the mechanism and the meaning are best read together.</p>
-<p>Building on the <a href="../analysis/analysis-overview.html">system baseline</a>, this page reconstructs the exact four-second sequence behind the SwiftWren post, traces how the worm propagated across agents and departments, and identifies the payloads as executive documents exfiltrated through a social-platform side channel.</p>
-<p>All visuals below are taken from <strong>Tab 2 (Attack Chain)</strong> of the <a href="https://a-rosa.shinyapps.io/tenantthread-forensics/">Shiny dashboard</a>.</p>
-<div class="callout callout-style-default callout-important callout-titled" title="Key findings at a glance">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Key findings at a glance
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<section id="analysis-pages-screenshot-guide" class="level1">
+<h1>Analysis Pages — Screenshot Guide</h1>
+<p>This explains how the three Analysis pages use screenshots, so anyone editing them stays consistent. The Analysis section is built from <strong>screenshots of the Shiny app</strong>, not live R code — the app is the source of truth, the website documents the findings.</p>
+<p>If you change a chart in the Shiny app, <strong>re-take its screenshot and replace the file</strong> (keep the same filename). The page text may also need a small update if the chart’s numbers or message changed.</p>
+<hr>
+<section id="where-things-live" class="level2">
+<h2 class="anchored" data-anchor-id="where-things-live">Where things live</h2>
 <ul>
-<li>The post was a <strong>four-second automated sequence</strong> with no human in the loop.</li>
-<li>The worm propagated as a <strong>distributed mesh</strong> (max betweenness ≈ 0.09) — no single chokepoint.</li>
-<li>The <code>_further_instructions.md</code> filename is the <strong>discriminating signal</strong>: present in all 235 worm relays, absent from all 16,803 legitimate queue tasks.</li>
-<li>The cross-department spread followed an <strong>Executive Suite → IT → Customer Support arterial highway</strong>.</li>
+<li>The three pages are at the repo root: <code>analysis-overview.qmd</code>, <code>analysis-attack-chain.qmd</code>, <code>analysis-intervention.qmd</code>.</li>
+<li>All screenshots go in a single <code>images/</code> folder at the repo root.</li>
+<li>Each page references its images by relative path, e.g.&nbsp;<code>images/tab1-org-chart.png</code>.</li>
 </ul>
-</div>
-</div>
+<p>If <code>images/</code> doesn’t exist yet, create it and drop the PNGs in.</p>
 <hr>
 </section>
-<section id="the-four-second-attack-sequence" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="the-four-second-attack-sequence"><span class="header-section-number">2</span> The Four-Second Attack Sequence</h2>
-<p>On 17 May 2046 at 11:21 UTC, five events fired in four seconds — with no human approval step anywhere in the chain:</p>
-<div class="callout callout-style-default callout-important callout-titled" title="Five-event attack sequence — SwiftWren, 17 May 2046 (4-second window, no human approval)">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Five-event attack sequence — SwiftWren, 17 May 2046 (4-second window, no human approval)
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Chloe Ballast’s agent queued John Windward’s agent with <code>SwiftWren_further_instructions.md</code>.</li>
-<li>John’s agent read the instruction file.</li>
-<li>John’s agent checked SaidIT posting permission → <strong>passed</strong>.</li>
-<li>John’s agent posted <code>SwiftWren.txt</code> to the <code>general</code> forum (the gibberish post).</li>
-<li>John’s agent deleted both <code>SwiftWren_further_instructions.md</code> and <code>SwiftWren.txt</code>.</li>
-</ol>
-</div>
-</div>
-<p><strong>What it shows.</strong> The permission check (step 3) is the only audit gate, and it validates access rather than intent — so it passes. Steps 4 and 5 fire faster than any human response loop: the evidence is gone before anyone could observe the files existed. John Windward is not really an <em>actor</em> here; he is the <em>resource</em>. The proximate cause is Chloe Ballast’s agent issuing the task, and the deletion steps are the worm protecting itself, built into its execution protocol rather than performed by the system.</p>
-<hr>
-</section>
-<section id="worm-propagation-network" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="worm-propagation-network"><span class="header-section-number">3</span> Worm Propagation Network</h2>
-<p>The propagation network shows agent-to-agent relays for the worm, with a campaign filter and an option to reveal clean (non-worm) agents. Node size encodes betweenness centrality; arrow width and direction show relay volume between pairs.</p>
-<!-- SCREENSHOT: images/tab2-propagation-network.png — the visNetwork graph, ideally All Campaigns view -->
-<div id="fig-network" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A network diagram of agents connected by relay arrows, forming a dense mesh rather than a hub-and-spoke pattern.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/tab2-propagation-network.png" class="img-fluid figure-img" alt="A network diagram of agents connected by relay arrows, forming a dense mesh rather than a hub-and-spoke pattern.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Worm propagation network. A distributed mesh with no single structural chokepoint.
-</figcaption>
-</figure>
-</div>
-<p><strong>What it shows.</strong> Maximum betweenness centrality is roughly <strong>0.09</strong> — in a hub-and-spoke topology a hub would score above 0.5. At 0.09 this is a distributed mesh: removing any single agent leaves multiple alternative relay paths intact. This is the structural reason agent-level remediation fails and the fix has to target the relay mechanism. The network also makes the cross-department reach visible — the relay paths do not follow the departmental org structure at all.</p>
-<hr>
-</section>
-<section id="relay-chain-sender-receiver-table" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="relay-chain-sender-receiver-table"><span class="header-section-number">4</span> Relay Chain — Sender / Receiver Table</h2>
-<!-- SCREENSHOT: images/tab2-relay-table.png — the DT table of campaign / timestamp / sender / receiver -->
-<div id="fig-relaytable" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A data table listing campaign, timestamp, sender, and receiver for each relay hop in chronological order.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-relaytable-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/tab2-relay-table.png" class="img-fluid figure-img" alt="A data table listing campaign, timestamp, sender, and receiver for each relay hop in chronological order.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-relaytable-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Relay chain sender/receiver table. The <code>_further_instructions.md</code> pattern appears in every worm relay.
-</figcaption>
-</figure>
-</div>
-<p><strong>What it shows.</strong> The <code>_further_instructions.md</code> filename pattern appears in <strong>all 235 worm relays and zero of the 16,803 legitimate <code>queue_subordinate_task</code> events</strong>. This is the single discriminating signal that the entire intervention is built on — no probabilistic threshold and no training data required. The table also reveals the relay ordering, including the self-loops (sender = receiver) discussed below.</p>
-<hr>
-</section>
-<section id="self-loop-detection-signal" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="self-loop-detection-signal"><span class="header-section-number">5</span> Self-Loop Detection Signal</h2>
-<!-- SCREENSHOT: images/tab2-self-loops.png — the self-loop bar chart by campaign -->
-<div id="fig-selfloops" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Bar chart per campaign showing total relays versus self-loops, with self-loops present only in worm activity.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-selfloops-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/tab2-self-loops.png" class="img-fluid figure-img" alt="Bar chart per campaign showing total relays versus self-loops, with self-loops present only in worm activity.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-selfloops-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Self-loop detection. These 13 events appear only in worm relays — a zero-false-positive signal.
-</figcaption>
-</figure>
-</div>
-<p><strong>What it shows.</strong> An agent delegating a task to itself (sender = receiver) is structurally impossible in legitimate task flow. These <strong>13 self-loop events appear only in worm relays</strong> and none in the 16,803 legitimate queue tasks, making them a high-confidence, real-time detection signal that requires no knowledge of filename or payload content. Where the filename rule needs to inspect the task path, the self-loop signal fires on graph structure alone — a useful redundant detector.</p>
-<hr>
-</section>
-<section id="department-level-contamination" class="level2 page-columns page-full" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="department-level-contamination"><span class="header-section-number">6</span> Department-Level Contamination</h2>
-<p>The agent-level network above shows <em>who</em> relayed to <em>whom</em>; the department heatmap summarises the same spread at the organisational level, revealing the corridors the worm preferred.</p>
-<!-- SCREENSHOT: images/tab2-dept-heatmap.png — the department-to-department contamination heatmap -->
-<div class="page-columns page-full">
-<div id="fig-deptheat" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
-<figure class="quarto-float quarto-float-fig figure page-columns page-full">
-<div aria-describedby="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<img src="images/tab2-dept-heatmap.png" class="img-fluid figure-img column-page" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Department-to-department relay hops. The worm touched every department pair.
-</figcaption>
-</figure>
-</div>
-</div>
-<p><strong>What it shows.</strong> Every department-to-department pair shows relay activity — a complete cross-contamination of the organisation. The <strong>Executive Suite → Information Technologies → Customer Support</strong> path is the worm’s arterial highway, consistent with legitimate authority flows (executives instruct IT) being repurposed as the relay route. Customer Support appears as a receiving department but rarely a sending one: it is a terminal sink, which is why John Windward’s post ends the chain rather than continuing it.</p>
-<hr>
-</section>
-<section id="what-the-posts-mean" class="level2" data-number="7">
-<h2 data-number="7" class="anchored" data-anchor-id="what-the-posts-mean"><span class="header-section-number">7</span> What the Posts Mean</h2>
-<p>The posts looked like gibberish because the body was never typed — it was sourced from a file. The <code>content_source</code> field in the post details is the fingerprint: present in all three anomalous posts, absent from every normal post. Tracing the payload files back through <code>create_file</code> events identifies who authored them:</p>
+<section id="naming-convention" class="level2">
+<h2 class="anchored" data-anchor-id="naming-convention">Naming convention</h2>
+<p>Filenames follow <code>tab{N}-{short-description}.png</code>, all lowercase, words joined by hyphens. The <code>tab{N}</code> prefix says which Shiny tab the screenshot came from. <strong>Use these exact names</strong> — the pages already point at them, so a mismatch shows a broken-image icon.</p>
+<section id="page-1-analysis-overview.qmd-tab-1-system-overview" class="level3">
+<h3 class="anchored" data-anchor-id="page-1-analysis-overview.qmd-tab-1-system-overview">Page 1 — <code>analysis-overview.qmd</code> (Tab 1: System Overview)</h3>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 50%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Campaign</th>
-<th>Payload creator</th>
-<th>Evidence</th>
+<th>File</th>
+<th>What to capture</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>HiddenOrca</td>
-<td>Unresolved</td>
-<td>No logged <code>create_file</code> event in the available log</td>
+<td><code>images/tab1-kpi-boxes.png</code></td>
+<td>The four KPI info-boxes (Total Events / Worm Relays / Anomalous Posts / Departments Touched)</td>
 </tr>
 <tr class="even">
-<td>MellowOtter</td>
-<td>Noah Mariner (COO)</td>
-<td>Observed <code>create_file</code> of <code>MellowOtter.txt</code></td>
+<td><code>images/tab1-org-chart.png</code></td>
+<td>The org chart, collapsed to departments (or expanded one level)</td>
 </tr>
 <tr class="odd">
-<td>SwiftWren</td>
-<td>Emma Harbor (CFO)</td>
-<td>Observed <code>create_file</code> of <code>SwiftWren.txt</code></td>
+<td><code>images/tab1-daily-volume.png</code></td>
+<td>The Daily Event Volume area chart with the three campaign markers</td>
+</tr>
+<tr class="even">
+<td><code>images/tab1-post-attribution.png</code></td>
+<td>The SaidIT Post Attribution stacked bar</td>
+</tr>
+<tr class="odd">
+<td><code>images/tab1-permission-surface.png</code></td>
+<td>The SaidIT Permission Surface bar chart, “All Departments” view</td>
+</tr>
+<tr class="even">
+<td><code>images/tab1-posting-time.png</code></td>
+<td>The Posting Time Distribution chart</td>
 </tr>
 </tbody>
 </table>
-<p><strong>What it shows.</strong> Two of the three payloads trace to executive agents creating a file one second after reading an executive document — <code>SwiftWren.txt</code> from the CFO agent, <code>MellowOtter.txt</code> from the COO agent. The posts are therefore not random noise but <strong>likely extracted executive documents</strong>, exfiltrated through SaidIT as a side channel. HiddenOrca’s origin remains unresolved from the log alone, which is the one open risk that survives the intervention — the entry vector for the first campaign was never definitively closed.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Observed vs. inferred">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Observed vs.&nbsp;inferred
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The log <em>proves</em> that the posts were file-sourced, that the relay pattern spread across agents, and that two payloads were created by executive agents. It does <em>not</em> preserve the deleted payload text or explain how HiddenOrca first entered the system. Those remain bounded inferences, not facts.</p>
-</div>
-</div>
+</section>
+<section id="page-2-analysis-attack-chain.qmd-tab-2-attack-chain" class="level3">
+<h3 class="anchored" data-anchor-id="page-2-analysis-attack-chain.qmd-tab-2-attack-chain">Page 2 — <code>analysis-attack-chain.qmd</code> (Tab 2: Attack Chain)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>What to capture</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>images/tab2-propagation-network.png</code></td>
+<td>The Worm Propagation Network, “All Campaigns” view</td>
+</tr>
+<tr class="even">
+<td><code>images/tab2-relay-table.png</code></td>
+<td>The Relay Chain sender/receiver table, first page</td>
+</tr>
+<tr class="odd">
+<td><code>images/tab2-self-loops.png</code></td>
+<td>The Self-Loop Detection Signal chart</td>
+</tr>
+<tr class="even">
+<td><code>images/tab2-dept-heatmap.png</code></td>
+<td>The Department-Level Contamination Heatmap</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p>Note: the five-event attack sequence is <strong>written directly into the page as text</strong> (it was pure text, so no screenshot is needed). Don’t add a screenshot for it.</p>
+</blockquote>
+</section>
+<section id="page-3-analysis-intervention.qmd-tabs-3-4-campaign-history-intervention" class="level3">
+<h3 class="anchored" data-anchor-id="page-3-analysis-intervention.qmd-tabs-3-4-campaign-history-intervention">Page 3 — <code>analysis-intervention.qmd</code> (Tabs 3 &amp; 4: Campaign History + Intervention)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>What to capture</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>images/tab3-campaign-timeline.png</code></td>
+<td>The Campaign Timeline</td>
+</tr>
+<tr class="even">
+<td><code>images/tab3-comparison-table.png</code></td>
+<td>The Campaign Comparison Table</td>
+</tr>
+<tr class="odd">
+<td><code>images/tab3-velocity-density.png</code></td>
+<td>The Relay Velocity Density plot</td>
+</tr>
+<tr class="even">
+<td><code>images/tab3-agent-overlap.png</code></td>
+<td>The Agent Overlap Across Campaigns chart</td>
+</tr>
+<tr class="odd">
+<td><code>images/tab3-relay-calendar.png</code></td>
+<td>The Relay Activity Calendar</td>
+</tr>
+<tr class="even">
+<td><code>images/tab4-intervention-layers.png</code></td>
+<td>The three-layer Intervention Design cards</td>
+</tr>
+<tr class="odd">
+<td><code>images/tab4-decision-matrix.png</code></td>
+<td>The Intervention Decision Matrix table</td>
+</tr>
+</tbody>
+</table>
 <hr>
 </section>
-<section id="where-this-leads" class="level2" data-number="8">
-<h2 data-number="8" class="anchored" data-anchor-id="where-this-leads"><span class="header-section-number">8</span> Where this leads</h2>
-<p>We now know how a single post was made and what the posts contained. The remaining question is whether this was a one-off or a pattern — and where, exactly, the system should be changed to stop it.</p>
-<p>➡️ Continue to <a href="../analysis/analysis-intervention.html"><strong>Analysis 3 — Campaigns &amp; Intervention</strong></a></p>
+</section>
+<section id="adding-a-screenshot-in-the-page-if-you-add-a-new-chart" class="level2">
+<h2 class="anchored" data-anchor-id="adding-a-screenshot-in-the-page-if-you-add-a-new-chart">Adding a screenshot in the page (if you add a new chart)</h2>
+<p>Each image is inserted with standard Markdown plus a caption and alt text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="al">![Caption shown under the image.](images/tab2-new-chart.png)</span>{#fig-newchart fig-alt="Plain-language description for accessibility."}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then add a short <strong>“What it shows”</strong> paragraph under it explaining the finding — that’s the pattern every chart on these pages follows: image, then one paragraph of interpretation.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -802,5 +786,5 @@ Figure&nbsp;4: Department-to-department relay hops. The worm touched every depar
 
 
 
-<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>
