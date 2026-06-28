@@ -17,8 +17,14 @@ website:
         text: Proposal
       - href: methodology.qmd
         text: Methodology
-      - href: analysis.qmd
-        text: Analysis
+      - text: Analysis
+        menu:
+          - href: analysis/analysis-overview.qmd
+            text: System Overview & Baseline
+          - href: analysis/analysis-attack-chain.qmd
+            text: Attack Chain & Post Meaning
+          - href: analysis/analysis-intervention.qmd
+            text: Campaigns & Intervention
       - href: poster.qmd
         text: Poster
       - href: userguide.qmd

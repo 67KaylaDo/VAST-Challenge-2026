@@ -22,5 +22,14 @@
   },
   "analysis.rmarkdown": {
     "analysis.html": "25c4f4e8"
+  },
+  "analysis/analysis-attack-chain.qmd": {
+    "analysis-attack-chain.html": "0fe19a1e"
+  },
+  "analysis/analysis-intervention.qmd": {
+    "analysis-intervention.html": "7692366f"
+  },
+  "analysis/analysis-overview.qmd": {
+    "analysis-overview.html": "f15b0d81"
   }
 }

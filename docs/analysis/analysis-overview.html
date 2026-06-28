@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-06-10">
+
+<title>Analysis 1 — System Overview &amp; Baseline – TenantThread Forensics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-704d1694b31487f23bfb84567679a24b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">TenantThread Forensics</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../proposal.html"> 
+<span class="menu-text">Proposal</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../methodology.html"> 
+<span class="menu-text">Methodology</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-analysis" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Analysis</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-analysis">    
+        <li>
+    <a class="dropdown-item" href="../analysis/analysis-overview.html">
+ <span class="dropdown-text">System Overview &amp; Baseline</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../analysis/analysis-attack-chain.html">
+ <span class="dropdown-text">Attack Chain &amp; Post Meaning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../analysis/analysis-intervention.html">
+ <span class="dropdown-text">Campaigns &amp; Intervention</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../poster.html"> 
+<span class="menu-text">Poster</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../userguide.html"> 
+<span class="menu-text">User Guide</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://comingsoonshinyapps.io/mc2-forensics/"> <i class="bi bi-box-arrow-up-right" role="img">
+</i> 
+<span class="menu-text">Launch Shiny App</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
+  <li><a href="#the-attack-in-numbers" id="toc-the-attack-in-numbers" class="nav-link" data-scroll-target="#the-attack-in-numbers"><span class="header-section-number">2</span> The Attack in Numbers</a></li>
+  <li><a href="#organisational-chart-worm-contamination-by-role" id="toc-organisational-chart-worm-contamination-by-role" class="nav-link" data-scroll-target="#organisational-chart-worm-contamination-by-role"><span class="header-section-number">3</span> Organisational Chart — Worm Contamination by Role</a></li>
+  <li><a href="#daily-event-volume-the-worm-was-operationally-invisible" id="toc-daily-event-volume-the-worm-was-operationally-invisible" class="nav-link" data-scroll-target="#daily-event-volume-the-worm-was-operationally-invisible"><span class="header-section-number">4</span> Daily Event Volume — The Worm Was Operationally Invisible</a></li>
+  <li><a href="#saidit-post-attribution-agents-vs.-humans" id="toc-saidit-post-attribution-agents-vs.-humans" class="nav-link" data-scroll-target="#saidit-post-attribution-agents-vs.-humans"><span class="header-section-number">5</span> SaidIT Post Attribution — Agents vs.&nbsp;Humans</a></li>
+  <li><a href="#posting-time-distribution" id="toc-posting-time-distribution" class="nav-link" data-scroll-target="#posting-time-distribution"><span class="header-section-number">6</span> Posting Time Distribution</a></li>
+  <li><a href="#saidit-permission-surface" id="toc-saidit-permission-surface" class="nav-link" data-scroll-target="#saidit-permission-surface"><span class="header-section-number">7</span> SaidIT Permission Surface</a></li>
+  <li><a href="#where-this-leads" id="toc-where-this-leads" class="nav-link" data-scroll-target="#where-this-leads"><span class="header-section-number">8</span> Where this leads</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analysis 1 — System Overview &amp; Baseline</h1>
+<p class="subtitle lead">What the normal Tenant Thread system looks like, and why the worm stayed invisible</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 10, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">June 28, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1</span> Overview</h2>
+<p>This is the first of three analysis pages reconstructing the prompt-injection worm at Tenant Thread. It answers the implicit question that every later finding depends on: <strong>what does the normal system look like?</strong> Before the attack chain can mean anything, we need the organisational structure, the baseline event rhythm, and the posting behaviour the worm hid inside.</p>
+<p>The full data-preparation pipeline — JSON normalisation, feature engineering, and the design decisions behind each derived object — is documented separately on the <a href="methodology.qmd">Methodology</a> page. This page begins from the prepared data and presents findings only.</p>
+<p>All visuals below are taken from <strong>Tab 1 (System Overview)</strong> of the <a href="https://a-rosa.shinyapps.io/tenantthread-forensics/">Shiny dashboard</a>, where each chart is interactive.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Key findings at a glance">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Key findings at a glance
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>The <strong>17 May 2046</strong> SaidIT post was <strong>not human-authored</strong>: an agent received a task, passed a permission check, posted a file, and deleted the evidence in a four-second burst.</li>
+<li>The worm was <strong>operationally invisible</strong> — its 235 malicious relays left no distinguishable signature in daily event volume, buried inside ordinary business traffic.</li>
+<li>Every <strong>SaidIT-capable agent</strong> was also in the worm relay chain, so removing any single agent would only redirect the worm.</li>
+<li>All six departments were touched, with the two payload origins sitting at the <strong>top</strong> of the org hierarchy.</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+<section id="the-attack-in-numbers" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="the-attack-in-numbers"><span class="header-section-number">2</span> The Attack in Numbers</h2>
+<p>The investigation draws on the full 185,147-event MC2 log. Four figures frame the scale of what follows:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Events in log</td>
+<td>185,147</td>
+</tr>
+<tr class="even">
+<td>Malicious relay events</td>
+<td>235</td>
+</tr>
+<tr class="odd">
+<td>Departments touched</td>
+<td>6 / 6</td>
+</tr>
+<tr class="even">
+<td>False positives from the proposed fix</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<!-- SCREENSHOT: images/tab1-kpi-boxes.png — the four KPI info-boxes at the top of Tab 1 -->
+<div id="fig-kpi" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Four summary boxes showing 185,147 total events, 235 worm relays, 3 anomalous posts, and 6 of 6 departments touched.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-kpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab1-kpi-boxes.png" class="img-fluid figure-img" alt="Four summary boxes showing 185,147 total events, 235 worm relays, 3 anomalous posts, and 6 of 6 departments touched.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: System Overview KPI summary — total events, worm relays, anomalous posts, and departments touched.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="organisational-chart-worm-contamination-by-role" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="organisational-chart-worm-contamination-by-role"><span class="header-section-number">3</span> Organisational Chart — Worm Contamination by Role</h2>
+<p>The org chart maps all staff into their departments and teams, colour-coded by forensic role. Worm-chain agents are drawn as diamonds; clean agents as circles; node size reflects each agent’s overall activity volume.</p>
+<!-- SCREENSHOT: images/tab1-org-chart.png — the echarts4r tree, expanded one or two levels to show department contamination -->
+<div id="fig-orgchart" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Hierarchical org chart of Tenant Thread with departments branching into teams and people, several marked as worm-chain agents.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-orgchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab1-org-chart.png" class="img-fluid figure-img" alt="Hierarchical org chart of Tenant Thread with departments branching into teams and people, several marked as worm-chain agents.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-orgchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Organisational chart coloured by forensic role. Red = anomalous poster; orange = payload origin; purple = gateway; amber = worm-chain agent; blue = no worm activity.
+</figcaption>
+</figure>
+</div>
+<p><strong>What it shows.</strong> Every one of the six departments contains at least one worm-chain agent — the worm respected no organisational boundary in the task-routing layer. The two payload origins (Emma Harbor, CFO; Noah Mariner, COO) sit at the very top of the hierarchy, while the terminal poster (John Windward) sits near the bottom. The worm flows <em>with</em> legitimate authority, not against it: executive agents inherited the broadest file-write and task-queuing privileges, making the most senior accounts the most dangerous rather than the most hardened.</p>
+<hr>
+</section>
+<section id="daily-event-volume-the-worm-was-operationally-invisible" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="daily-event-volume-the-worm-was-operationally-invisible"><span class="header-section-number">4</span> Daily Event Volume — The Worm Was Operationally Invisible</h2>
+<!-- SCREENSHOT: images/tab1-daily-volume.png — the daily event volume area chart with the three red campaign markers -->
+<div id="fig-volume" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Area chart of daily events over time with three vertical markers for HiddenOrca, MellowOtter, and SwiftWren; an early-May peak reflects normal business activity.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-volume-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab1-daily-volume.png" class="img-fluid figure-img" alt="Area chart of daily events over time with three vertical markers for HiddenOrca, MellowOtter, and SwiftWren; an early-May peak reflects normal business activity.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-volume-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Daily event volume across the log window. Dashed markers indicate the three anomalous post dates; the early-May peak is ordinary business traffic, not worm activity.
+</figcaption>
+</figure>
+</div>
+<p><strong>What it shows.</strong> All three campaign dates (May 10, 11, 17) fall within the first eighteen days of the log, after which the system runs cleanly for weeks — consistent with a bounded, targeted operation rather than persistent malware. The early-May peak in volume is <strong>ordinary business traffic</strong> — the most frequent event types on those days are routine emails, meetings, and task assignments, not worm activity. The worm’s 235 relays are a tiny fraction of the thousands of legitimate <code>queue_subordinate_task</code> events firing daily, so they leave <strong>no distinguishable signature in daily volume</strong> on any post date. If anything, firing during a period of high legitimate noise gave the worm better cover, not worse.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Why this matters">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why this matters
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The worm left no signature in event volume — not because the days were quiet, but because its relays were swamped by ordinary business activity. Security operations relying on daily-event dashboards or rate alerting would have missed this incident entirely. Detection has to happen at the level of event <em>content</em>, not event <em>count</em>.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="saidit-post-attribution-agents-vs.-humans" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="saidit-post-attribution-agents-vs.-humans"><span class="header-section-number">5</span> SaidIT Post Attribution — Agents vs.&nbsp;Humans</h2>
+<!-- SCREENSHOT: images/tab1-post-attribution.png — the stacked bar of AI Agent vs Human posts, normal vs anomalous -->
+<div id="fig-attribution" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Stacked bar chart comparing AI agent and human SaidIT posts, with all anomalous file-sourced posts attributed to agents.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-attribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab1-post-attribution.png" class="img-fluid figure-img" alt="Stacked bar chart comparing AI agent and human SaidIT posts, with all anomalous file-sourced posts attributed to agents.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-attribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: SaidIT post attribution. All three anomalous posts are agent-initiated; no human post ever used a file source.
+</figcaption>
+</figure>
+</div>
+<p><strong>What it shows.</strong> All three anomalous posts are agent-initiated, and <strong>zero human posts ever used the <code>content_source</code> field</strong> — it is an AI-agent-only workflow feature, which makes it a clean forensic identifier with no human-behaviour false-positive risk. Agent posting is already normalised in this system, which is exactly what made the anomaly hard to see: the <em>act</em> of an agent posting is expected, so nothing about the post event itself looks out of place without inspecting its content.</p>
+<hr>
+</section>
+<section id="posting-time-distribution" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="posting-time-distribution"><span class="header-section-number">6</span> Posting Time Distribution</h2>
+<!-- SCREENSHOT: images/tab1-posting-time.png — the hour-of-day post distribution, anomalous posts highlighted -->
+<div id="fig-time" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Bar chart of posts by hour of day showing human posts concentrated in business hours and anomalous posts in off-hours.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab1-posting-time.png" class="img-fluid figure-img" alt="Bar chart of posts by hour of day showing human posts concentrated in business hours and anomalous posts in off-hours.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Hour-of-day distribution of SaidIT posts. Anomalous posts cluster in low-activity, off-hours windows.
+</figcaption>
+</figure>
+</div>
+<p><strong>What it shows.</strong> Normal human posts cluster in mid-day UTC hours, falling to near zero before dawn and late at night — precisely the windows where all three anomalous posts fired. SwiftWren posted at 11:21 UTC (4:21 am local), a pre-dawn slot with almost no normal human activity. The timing reduces the chance a colleague notices the post and raises an alert before the evidence files are deleted. An off-hours agent-post alert would have flagged all three incidents at delivery time.</p>
+<hr>
+</section>
+<section id="saidit-permission-surface" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="saidit-permission-surface"><span class="header-section-number">7</span> SaidIT Permission Surface</h2>
+<p>The permission surface shows every agent that ever passed a SaidIT posting check — the pool of agents capable of being the worm’s terminal executor. The dashboard lets you filter this by department.</p>
+<!-- SCREENSHOT: images/tab1-permission-surface.png — the permission surface bar chart, ideally "All Departments" view -->
+<div id="fig-permission" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal bar chart of agents by number of SaidIT permission checks passed, all marked as part of the worm relay chain.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-permission-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab1-permission-surface.png" class="img-fluid figure-img" alt="Horizontal bar chart of agents by number of SaidIT permission checks passed, all marked as part of the worm relay chain.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-permission-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: SaidIT permission surface. Every agent with posting capability was also touched by the worm relay chain.
+</figcaption>
+</figure>
+</div>
+<p><strong>What it shows.</strong> Every observed SaidIT-capable agent was also in the worm relay chain — a 100% overlap that is a consequence of the worm following the same paths as legitimate task routing. The permission check itself validates <em>credentials</em> (is this agent allowed to post?) but not <em>intent</em> (why is this agent posting from a file?), so it passes automatically for any authorised agent.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="The worm did not need John Windward specifically">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>The worm did not need John Windward specifically
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Because every SaidIT-capable agent was reachable through the relay chain, revoking John Windward’s posting rights alone achieves nothing — the worm simply routes to the next authorised agent. The intervention must act at the relay-protocol level, not on individual agents. This conclusion is developed fully in <a href="../analysis/analysis-intervention.html">Analysis 3 — Campaigns &amp; Intervention</a>.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="where-this-leads" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="where-this-leads"><span class="header-section-number">8</span> Where this leads</h2>
+<p>The baseline establishes three things the rest of the investigation relies on: the worm spread through the org’s own authority structure, it left no volume signature, and no single agent was load-bearing. The next page reconstructs the exact four-second attack chain and explains what the posts actually contained.</p>
+<p>➡️ Continue to <a href="../analysis/analysis-attack-chain.html"><strong>Analysis 2 — Attack Chain &amp; Post Meaning</strong></a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>ISSS608 Visual Analytics · AY2025-26 April Term · Group Project <a href="https://vast-challenge.github.io/2026/MC2.html">VAST Challenge 2026 MC2</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
