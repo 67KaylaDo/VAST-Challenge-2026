@@ -31,5 +31,11 @@
   },
   "analysis/analysis-overview.qmd": {
     "analysis-overview.html": "f15b0d81"
+  },
+  "analysis-overview.qmd": {
+    "analysis-overview.html": "ba8c85e3"
+  },
+  "README-screenshots.md": {
+    "README-screenshots.html": "de545caa"
   }
 }

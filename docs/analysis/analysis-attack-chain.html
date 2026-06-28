@@ -168,7 +168,7 @@ ul.task-list li input[type="checkbox"] {
 </nav>
     </div>
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content page-columns page-full column-body" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -178,7 +178,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<div class="quarto-title-meta column-page-left">
+<div class="quarto-title-meta column-body">
 
     
     <div>
@@ -301,19 +301,21 @@ Figure&nbsp;3: Self-loop detection. These 13 events appear only in worm relays �
 <p><strong>What it shows.</strong> An agent delegating a task to itself (sender = receiver) is structurally impossible in legitimate task flow. These <strong>13 self-loop events appear only in worm relays</strong> and none in the 16,803 legitimate queue tasks, making them a high-confidence, real-time detection signal that requires no knowledge of filename or payload content. Where the filename rule needs to inspect the task path, the self-loop signal fires on graph structure alone — a useful redundant detector.</p>
 <hr>
 </section>
-<section id="department-level-contamination" class="level2" data-number="6">
+<section id="department-level-contamination" class="level2 page-columns page-full" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="department-level-contamination"><span class="header-section-number">6</span> Department-Level Contamination</h2>
 <p>The agent-level network above shows <em>who</em> relayed to <em>whom</em>; the department heatmap summarises the same spread at the organisational level, revealing the corridors the worm preferred.</p>
 <!-- SCREENSHOT: images/tab2-dept-heatmap.png — the department-to-department contamination heatmap -->
-<div id="fig-deptheat" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/tab2-dept-heatmap.png" class="img-fluid figure-img" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
+<div class="page-columns page-full">
+<div id="fig-deptheat" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<img src="images/tab2-dept-heatmap.png" class="img-fluid figure-img column-page" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;4: Department-to-department relay hops. The worm touched every department pair.
 </figcaption>
 </figure>
+</div>
 </div>
 <p><strong>What it shows.</strong> Every department-to-department pair shows relay activity — a complete cross-contamination of the organisation. The <strong>Executive Suite → Information Technologies → Customer Support</strong> path is the worm’s arterial highway, consistent with legitimate authority flows (executives instruct IT) being repurposed as the relay route. Customer Support appears as a receiving department but rarely a sending one: it is a terminal sink, which is why John Windward’s post ends the chain rather than continuing it.</p>
 <hr>

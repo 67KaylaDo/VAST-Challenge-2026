@@ -81,7 +81,9 @@ The agent-level network above shows *who* relayed to *whom*; the department heat
 
 <!-- SCREENSHOT: images/tab2-dept-heatmap.png — the department-to-department contamination heatmap -->
 
+::: {.column-page}
 ![Department-to-department relay hops. The worm touched every department pair.](images/tab2-dept-heatmap.png){#fig-deptheat fig-alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity."}
+:::
 
 **What it shows.** Every department-to-department pair shows relay activity — a complete cross-contamination of the organisation. The **Executive Suite → Information Technologies → Customer Support** path is the worm's arterial highway, consistent with legitimate authority flows (executives instruct IT) being repurposed as the relay route. Customer Support appears as a receiving department but rarely a sending one: it is a terminal sink, which is why John Windward's post ends the chain rather than continuing it.
 

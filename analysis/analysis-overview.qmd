@@ -29,19 +29,13 @@ All visuals below are taken from **Tab 1 (System Overview)** of the [Shiny dashb
 
 ## The Attack in Numbers
 
-The investigation draws on the full 185,147-event MC2 log. Four figures frame the scale of what follows:
-
-| Metric | Value |
-| --- | --- |
-| Events in log | 185,147 |
-| Malicious relay events | 235 |
-| Departments touched | 6 / 6 |
-| False positives from the proposed fix | 0 |
+The investigation draws on the full 185,147-event MC2 log. The four headline figures — 185,147 events, 235 malicious relays, all 6 departments touched, and 0 false positives from the proposed fix — frame the scale of what follows:
 
 <!-- SCREENSHOT: images/tab1-kpi-boxes.png — the four KPI info-boxes at the top of Tab 1 -->
 
+::: {.column-page}
 ![System Overview KPI summary — total events, worm relays, anomalous posts, and departments touched.](images/tab1-kpi-boxes.png){#fig-kpi fig-alt="Four summary boxes showing 185,147 total events, 235 worm relays, 3 anomalous posts, and 6 of 6 departments touched."}
-
+:::
 
 ---
 
