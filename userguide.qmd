@@ -2,12 +2,13 @@
 title: "User Guide"
 format:
   html:
-    toc: false
+    toc: true
+    toc-depth: 3
 ---
  
 # Introduction
  
-The TenantThread Forensics Dashboard is an interactive visual analytics application for investigating the TenantThread AI worm incident. It brings together evidence from three attack campaigns — HiddenOrca, MellowOtter, and SwiftWren — so analysts can understand how the worm spread, compare campaign behaviour, and evaluate possible containment measures.
+The TenantThread Forensics Dashboard is an interactive visual analytics application for investigating the TenantThread AI worm incident. It brings together evidence from three attack campaigns - HiddenOrca, MellowOtter, and SwiftWren - so analysts can understand how the worm spread, compare campaign behaviour, and evaluate possible containment measures.
  
 This guide covers all four tabs in the application:
  
