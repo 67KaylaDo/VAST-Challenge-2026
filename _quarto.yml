@@ -7,8 +7,8 @@ website:
   description: "ISSS608 Visual Analytics | VAST Challenge 2026 MC2 | Forensic Investigation of a Prompt-Injection Worm"
 
   navbar:
-    background: dark
-    foreground: light
+    background: light
+    foreground: dark
     search: true
     left:
       - href: index.qmd
@@ -41,7 +41,7 @@ website:
 
 format:
   html:
-    theme: flatly
+    theme: minty
     css: styles.css
     toc: true
     toc-depth: 3

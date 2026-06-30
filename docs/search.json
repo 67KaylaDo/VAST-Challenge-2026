@@ -4,35 +4,175 @@
     "href": "userguide.html",
     "title": "User Guide",
     "section": "",
-    "text": "The TenantThread Forensics Dashboard is an interactive visual analytics application built to support forensic investigation of the TenantThread AI worm propagation incident. Using data spanning three attack campaigns — HiddenOrca, MellowOtter, and SwiftWren — the dashboard allows analysts to trace how the worm spread between AI agents, reconstruct attack chains, and evaluate potential interventions.\nThis user guide covers the Introduction page and the two tabs developed by Amelia: Tab 1 (System Overview) and Tab 2 (Attack Chain Reconstruction). Tabs 3 and 4 are covered separately by Tam.\n\n\nOpen any modern web browser and navigate to:\nhttps://a-rosa.shinyapps.io/tenantthread-forensics/\nNo login or installation is required. The application loads directly in-browser. Allow a few seconds on first load as the data initialises in the background.\n\n\n\nThe dashboard uses a dark navy sidebar layout. The left sidebar contains the application title and the main navigation menu. Clicking a menu item switches the main content panel on the right. The four tabs are:\n\n\n\n\n\n\n\n\nTab\nOwner\nPurpose\n\n\n\n\nTab 1 – System Overview\nAmelia\nHigh-level summary of all events, actors, and timeline across the three campaigns\n\n\nTab 2 – Attack Chain Reconstruction\nAmelia\nStep-by-step backward chain reconstruction tracing how the worm reached each terminal actor\n\n\nTab 3 – Campaign History\nTam\nTemporal patterns and recurrence analysis across the three campaigns\n\n\nTab 4 – Intervention Design\nTam\nCounterfactual simulation and proposed fix for disrupting worm propagation\n\n\n\n\n\n\nDefault landing page"
+    "text": "The TenantThread Forensics Dashboard is an interactive visual analytics application for investigating the TenantThread AI worm incident. It brings together evidence from three attack campaigns — HiddenOrca, MellowOtter, and SwiftWren — so analysts can understand how the worm spread, compare campaign behaviour, and evaluate possible containment measures.\nThis guide covers all four tabs in the application:\n\nTab 1: System Overview\nTab 2: Attack Chain\nTab 3: Campaign History\nTab 4: Intervention Design\n\n\n\nOpen any modern web browser and go to:\nhttps://a-rosa.shinyapps.io/tenantthread-forensics/\nNo login or installation is required. The app loads directly in the browser. Allow a few seconds on first load while the data is initialising.\n\n\n\nThe dashboard uses a left-hand navigation menu. Click any tab to switch the main panel on the right. The four tabs are:\n\n\n\n\n\n\n\nTab\nPurpose\n\n\n\n\nSystem Overview\nHigh-level summary of the incident, actors, and evidence patterns\n\n\nAttack Chain\nVisual reconstruction of how the worm moved between agents\n\n\nCampaign History\nComparison of the three campaigns over time\n\n\nIntervention Design\nRecommended controls to stop or reduce future propagation"
   },
   {
-    "objectID": "userguide.html#how-to-access",
-    "href": "userguide.html#how-to-access",
+    "objectID": "userguide.html#how-to-access-the-app",
+    "href": "userguide.html#how-to-access-the-app",
     "title": "User Guide",
     "section": "",
-    "text": "Open any modern web browser and navigate to:\nhttps://a-rosa.shinyapps.io/tenantthread-forensics/\nNo login or installation is required. The application loads directly in-browser. Allow a few seconds on first load as the data initialises in the background."
+    "text": "Open any modern web browser and go to:\nhttps://a-rosa.shinyapps.io/tenantthread-forensics/\nNo login or installation is required. The app loads directly in the browser. Allow a few seconds on first load while the data is initialising."
   },
   {
-    "objectID": "userguide.html#application-layout",
-    "href": "userguide.html#application-layout",
+    "objectID": "userguide.html#app-layout",
+    "href": "userguide.html#app-layout",
     "title": "User Guide",
     "section": "",
-    "text": "The dashboard uses a dark navy sidebar layout. The left sidebar contains the application title and the main navigation menu. Clicking a menu item switches the main content panel on the right. The four tabs are:\n\n\n\n\n\n\n\n\nTab\nOwner\nPurpose\n\n\n\n\nTab 1 – System Overview\nAmelia\nHigh-level summary of all events, actors, and timeline across the three campaigns\n\n\nTab 2 – Attack Chain Reconstruction\nAmelia\nStep-by-step backward chain reconstruction tracing how the worm reached each terminal actor\n\n\nTab 3 – Campaign History\nTam\nTemporal patterns and recurrence analysis across the three campaigns\n\n\nTab 4 – Intervention Design\nTam\nCounterfactual simulation and proposed fix for disrupting worm propagation\n\n\n\n\n\n\nDefault landing page"
+    "text": "The dashboard uses a left-hand navigation menu. Click any tab to switch the main panel on the right. The four tabs are:\n\n\n\n\n\n\n\nTab\nPurpose\n\n\n\n\nSystem Overview\nHigh-level summary of the incident, actors, and evidence patterns\n\n\nAttack Chain\nVisual reconstruction of how the worm moved between agents\n\n\nCampaign History\nComparison of the three campaigns over time\n\n\nIntervention Design\nRecommended controls to stop or reduce future propagation"
   },
   {
-    "objectID": "userguide.html#event-timeline-plot",
-    "href": "userguide.html#event-timeline-plot",
+    "objectID": "userguide.html#key-finding-panel",
+    "href": "userguide.html#key-finding-panel",
     "title": "User Guide",
-    "section": "Event Timeline Plot",
-    "text": "Event Timeline Plot\nEach point represents a single logged event in the dataset. Events are plotted on the x-axis (timestamp) and coloured by campaign. Vertical dashed lines mark key anomaly dates identified during analysis.\n\n[1] Hover Tooltip — Hover over any point to see a pop-up showing the event’s timestamp, actor name, action type, and campaign. This tooltip is interactive and powered by Plotly.\n[2] Zoom & Pan — Use the Plotly toolbar that appears in the top-right corner of the chart to zoom into a specific time window, pan across the timeline, or reset the view to default."
+    "section": "Key finding panel",
+    "text": "Key finding panel\nThe top of the page summarises the main conclusion of the analysis. It states that the 17 May 2046 SaidIT post was not human-authored and that a specific relay pattern was used to propagate the worm."
   },
   {
-    "objectID": "userguide.html#event-count-bar-chart",
-    "href": "userguide.html#event-count-bar-chart",
+    "objectID": "userguide.html#organisational-chart",
+    "href": "userguide.html#organisational-chart",
     "title": "User Guide",
-    "section": "Event Count Bar Chart",
-    "text": "Event Count Bar Chart\nDisplays the number of events per campaign (or per actor, depending on the current filter selection). Bars are colour-coded to match the timeline above for easy cross-reference.\n\nHover for Count — Hovering over a bar shows the exact event count for that category."
+    "section": "Organisational chart",
+    "text": "Organisational chart\nThis visual shows the organisation structure and marks the roles involved in the worm chain. Use it to see which departments were affected and how the propagation flowed through the hierarchy.\n\nClick a node to expand or collapse it.\nColour indicates the forensic role of the node.\nDiamond-shaped nodes represent worm-chain agents.\nNode size reflects activity volume."
+  },
+  {
+    "objectID": "userguide.html#daily-event-volume",
+    "href": "userguide.html#daily-event-volume",
+    "title": "User Guide",
+    "section": "Daily event volume",
+    "text": "Daily event volume\nThis graphic shows overall event activity over time. It helps analysts distinguish ordinary business traffic from suspicious behaviour. The key point is that the worm relays were hidden inside normal-looking daily activity and would not be obvious from volume alone."
+  },
+  {
+    "objectID": "userguide.html#saidit-post-attribution",
+    "href": "userguide.html#saidit-post-attribution",
+    "title": "User Guide",
+    "section": "SaidIT post attribution",
+    "text": "SaidIT post attribution\nThis section shows that the anomalous posts were linked to AI-agent workflows rather than human posts. It is useful for confirming that the suspicious content was generated through an automated pathway."
+  },
+  {
+    "objectID": "userguide.html#saidit-permission-surface",
+    "href": "userguide.html#saidit-permission-surface",
+    "title": "User Guide",
+    "section": "SaidIT permission surface",
+    "text": "SaidIT permission surface\nThis view shows which agents had passed a SaidIT posting permission check. It helps answer whether the worm needed a specific user or whether any authorised agent could have served as a final executor.\n\nUse the department filter to narrow the view.\nThe main lesson is that the worm did not need to target a single person specifically; it only needed to reach an agent with the required permission."
+  },
+  {
+    "objectID": "userguide.html#posting-time-distribution",
+    "href": "userguide.html#posting-time-distribution",
+    "title": "User Guide",
+    "section": "Posting time distribution",
+    "text": "Posting time distribution\nThis chart shows when the anomalous posts occurred. The key insight is that the suspicious posts happened during low-volume hours, when human oversight was likely to be weakest."
+  },
+  {
+    "objectID": "userguide.html#five-event-attack-sequence",
+    "href": "userguide.html#five-event-attack-sequence",
+    "title": "User Guide",
+    "section": "Five-event attack sequence",
+    "text": "Five-event attack sequence\nThe page begins with a concise explanation of the five-step sequence that characterised the attack. It shows how an instruction file was queued, read, used to trigger a SaidIT post, and then deleted."
+  },
+  {
+    "objectID": "userguide.html#worm-propagation-network",
+    "href": "userguide.html#worm-propagation-network",
+    "title": "User Guide",
+    "section": "Worm propagation network",
+    "text": "Worm propagation network\nThis is the central network visualisation for the tab.\n\nUse the campaign selector to focus on HiddenOrca, MellowOtter, SwiftWren, or all campaigns.\nToggle the display of clean agents if you want to focus only on suspicious or contaminated paths.\nClick or explore nodes to see how the worm travelled through the organisation.\n\nThe network is designed to show that the worm spread through a distributed mesh rather than through a single choke point."
+  },
+  {
+    "objectID": "userguide.html#relay-chain-table",
+    "href": "userguide.html#relay-chain-table",
+    "title": "User Guide",
+    "section": "Relay chain table",
+    "text": "Relay chain table\nBelow the network is a table showing the relay chain as sender and receiver pairs. Each row records:\n\nthe campaign,\nthe timestamp,\nthe sender agent,\nthe receiver agent.\n\nUse this table to inspect the sequence of relay events in a more structured format."
+  },
+  {
+    "objectID": "userguide.html#forensic-signal-highlights",
+    "href": "userguide.html#forensic-signal-highlights",
+    "title": "User Guide",
+    "section": "Forensic signal highlights",
+    "text": "Forensic signal highlights\nThe tab also highlights two important detection signals:\n\nThe filename pattern _further_instructions.md appears in all malicious relays and in none of the legitimate queue events.\nSelf-loop relay events are present only in worm activity and can act as a strong real-time detection signal."
+  },
+  {
+    "objectID": "userguide.html#department-contamination-heatmap",
+    "href": "userguide.html#department-contamination-heatmap",
+    "title": "User Guide",
+    "section": "Department contamination heatmap",
+    "text": "Department contamination heatmap\nThis visual shows how the worm moved across departments. It helps analysts understand which pathways were most heavily used and where the spread converged, especially around the terminal posting stages."
+  },
+  {
+    "objectID": "userguide.html#campaign-timeline",
+    "href": "userguide.html#campaign-timeline",
+    "title": "User Guide",
+    "section": "Campaign timeline",
+    "text": "Campaign timeline\nThis section compares the overall course of each campaign and shows that all three followed the same basic pattern: instruction-file relay, propagated task, and final anomalous post. It also shows that SwiftWren was the most persistent and touched the widest set of agents."
+  },
+  {
+    "objectID": "userguide.html#campaign-comparison-table",
+    "href": "userguide.html#campaign-comparison-table",
+    "title": "User Guide",
+    "section": "Campaign comparison table",
+    "text": "Campaign comparison table\nThis table summarises the differences in scale and mechanism between the campaigns. The main lesson is that the campaigns differed in size and persistence, but not in the underlying propagation logic."
+  },
+  {
+    "objectID": "userguide.html#relay-velocity-density",
+    "href": "userguide.html#relay-velocity-density",
+    "title": "User Guide",
+    "section": "Relay velocity density",
+    "text": "Relay velocity density\nThis view helps analysts assess the pace of relay activity. It suggests that SwiftWren had a more regular cadence, implying a more systematic or scheduled propagation loop."
+  },
+  {
+    "objectID": "userguide.html#agent-overlap-across-campaigns",
+    "href": "userguide.html#agent-overlap-across-campaigns",
+    "title": "User Guide",
+    "section": "Agent overlap across campaigns",
+    "text": "Agent overlap across campaigns\nThis section shows which agents appeared in more than one campaign. These recurring agents are important because they indicate structural exposure rather than isolated incidents."
+  },
+  {
+    "objectID": "userguide.html#relay-activity-calendar",
+    "href": "userguide.html#relay-activity-calendar",
+    "title": "User Guide",
+    "section": "Relay activity calendar",
+    "text": "Relay activity calendar\nThe calendar view highlights repeated bursts of activity across time. It is useful for identifying whether the worm behaviour repeated in a cyclical or time-based pattern."
+  },
+  {
+    "objectID": "userguide.html#payload-creator-identification",
+    "href": "userguide.html#payload-creator-identification",
+    "title": "User Guide",
+    "section": "Payload creator identification",
+    "text": "Payload creator identification\nThis section attempts to attribute payload families to specific executive agents. It also notes that one campaign remains unresolved from the available log alone."
+  },
+  {
+    "objectID": "userguide.html#recommended-intervention-stack",
+    "href": "userguide.html#recommended-intervention-stack",
+    "title": "User Guide",
+    "section": "Recommended intervention stack",
+    "text": "Recommended intervention stack\nThe app presents a three-layer intervention strategy:\n\nBlock queue_subordinate_task events that read instruction files ending in _further_instructions.md.\nRequire human approval or reject agent-initiated SaidIT posts that use file-sourced content.\nFlag or block task relays that cross department boundaries when the target is an agent."
+  },
+  {
+    "objectID": "userguide.html#layer-1-relay-block",
+    "href": "userguide.html#layer-1-relay-block",
+    "title": "User Guide",
+    "section": "Layer 1: Relay block",
+    "text": "Layer 1: Relay block\nThis is the most effective control because it stops propagation at the relay stage before any payload reaches the final poster. The app reports that this rule would have covered all 235 malicious relays with zero observed false positives in the legitimate queue-task data."
+  },
+  {
+    "objectID": "userguide.html#layer-2-post-gate",
+    "href": "userguide.html#layer-2-post-gate",
+    "title": "User Guide",
+    "section": "Layer 2: Post gate",
+    "text": "Layer 2: Post gate\nThis control acts as a reactive safeguard at the point of publication. It catches anomalous file-sourced posts before they are shared publicly or internally."
+  },
+  {
+    "objectID": "userguide.html#layer-3-cross-department-guard",
+    "href": "userguide.html#layer-3-cross-department-guard",
+    "title": "User Guide",
+    "section": "Layer 3: Cross-department guard",
+    "text": "Layer 3: Cross-department guard\nThis governance control targets the structural pattern of the worm by limiting cross-department relay behaviour. It is useful as a broader policy layer, although it may need tuning to avoid over-blocking legitimate workflows."
+  },
+  {
+    "objectID": "userguide.html#intervention-decision-matrix",
+    "href": "userguide.html#intervention-decision-matrix",
+    "title": "User Guide",
+    "section": "Intervention decision matrix",
+    "text": "Intervention decision matrix\nThe final section summarises the trade-offs between the intervention options. Use it to compare the impact, scope, and practicality of each defensive layer."
   },
   {
     "objectID": "proposal.html",

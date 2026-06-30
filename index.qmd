@@ -16,14 +16,10 @@ format:
     <strong>This platform reconstructs every step.</strong>
   </p>
   <a href="https://a-rosa.shinyapps.io/tenantthread-forensics/" target="_blank"
-     style="display:inline-block; background:#5C85D6; color:white; padding:0.7rem 1.6rem;
-            border-radius:8px; font-weight:700; text-decoration:none; margin-right:0.8rem;">
+     class="hero-cta hero-cta-primary">
     Launch Shiny App →
   </a>
-  <a href="proposal.html"
-     style="display:inline-block; background:rgba(255,255,255,0.12); color:#e8edf2;
-            padding:0.7rem 1.6rem; border-radius:8px; font-weight:600; text-decoration:none;
-            border:1px solid rgba(255,255,255,0.2);">
+  <a href="proposal.html" class="hero-cta hero-cta-secondary">
     Read Proposal
   </a>
 </div>
@@ -90,22 +86,22 @@ This investigation uses the full **185,147-event MC2 log** to reconstruct the at
 ## The Attack in Numbers
 
 ```{=html}
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem; margin:1rem 0; text-align:center;">
-  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
-    <div style="font-size:2.2rem; font-weight:900; color:#5C85D6;">185,147</div>
-    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">events in log</div>
+<div class="metric-grid">
+  <div class="metric-card">
+    <div class="metric-value metric-blue">185,147</div>
+    <div class="metric-label">events in log</div>
   </div>
-  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
-    <div style="font-size:2.2rem; font-weight:900; color:#E87C7C;">235</div>
-    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">malicious relay events</div>
+  <div class="metric-card">
+    <div class="metric-value metric-red">235</div>
+    <div class="metric-label">malicious relay events</div>
   </div>
-  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
-    <div style="font-size:2.2rem; font-weight:900; color:#F5A623;">18</div>
-    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">agents compromised</div>
+  <div class="metric-card">
+    <div class="metric-value metric-amber">18</div>
+    <div class="metric-label">agents compromised</div>
   </div>
-  <div style="background:#1a2d3f; border-radius:8px; padding:1rem; border:1px solid #2a3d52;">
-    <div style="font-size:2.2rem; font-weight:900; color:#27AE60;">0</div>
-    <div style="color:#a0b4c8; font-size:0.85rem; margin-top:0.3rem;">false positives from fix</div>
+  <div class="metric-card">
+    <div class="metric-value metric-green">0</div>
+    <div class="metric-label">false positives from fix</div>
   </div>
 </div>
 ```
