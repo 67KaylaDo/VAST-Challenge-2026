@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-06-10">
 
-<title>Analysis 1 — System Overview &amp; Baseline – TenantThread Forensics</title>
+<title>Analysis 1 - System Overview &amp; Baseline – TenantThread Forensics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -158,9 +158,9 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
   <li><a href="#the-attack-in-numbers" id="toc-the-attack-in-numbers" class="nav-link" data-scroll-target="#the-attack-in-numbers"><span class="header-section-number">2</span> The Attack in Numbers</a></li>
-  <li><a href="#organisational-chart-worm-contamination-by-role" id="toc-organisational-chart-worm-contamination-by-role" class="nav-link" data-scroll-target="#organisational-chart-worm-contamination-by-role"><span class="header-section-number">3</span> Organisational Chart — Worm Contamination by Role</a></li>
-  <li><a href="#daily-event-volume-the-worm-was-operationally-invisible" id="toc-daily-event-volume-the-worm-was-operationally-invisible" class="nav-link" data-scroll-target="#daily-event-volume-the-worm-was-operationally-invisible"><span class="header-section-number">4</span> Daily Event Volume — The Worm Was Operationally Invisible</a></li>
-  <li><a href="#saidit-post-attribution-agents-vs.-humans" id="toc-saidit-post-attribution-agents-vs.-humans" class="nav-link" data-scroll-target="#saidit-post-attribution-agents-vs.-humans"><span class="header-section-number">5</span> SaidIT Post Attribution — Agents vs.&nbsp;Humans</a></li>
+  <li><a href="#organisational-chart---worm-contamination-by-role" id="toc-organisational-chart---worm-contamination-by-role" class="nav-link" data-scroll-target="#organisational-chart---worm-contamination-by-role"><span class="header-section-number">3</span> Organisational Chart - Worm Contamination by Role</a></li>
+  <li><a href="#daily-event-volume---the-worm-was-operationally-invisible" id="toc-daily-event-volume---the-worm-was-operationally-invisible" class="nav-link" data-scroll-target="#daily-event-volume---the-worm-was-operationally-invisible"><span class="header-section-number">4</span> Daily Event Volume - The Worm Was Operationally Invisible</a></li>
+  <li><a href="#saidit-post-attribution---agents-vs.-humans" id="toc-saidit-post-attribution---agents-vs.-humans" class="nav-link" data-scroll-target="#saidit-post-attribution---agents-vs.-humans"><span class="header-section-number">5</span> SaidIT Post Attribution - Agents vs.&nbsp;Humans</a></li>
   <li><a href="#posting-time-distribution" id="toc-posting-time-distribution" class="nav-link" data-scroll-target="#posting-time-distribution"><span class="header-section-number">6</span> Posting Time Distribution</a></li>
   <li><a href="#saidit-permission-surface" id="toc-saidit-permission-surface" class="nav-link" data-scroll-target="#saidit-permission-surface"><span class="header-section-number">7</span> SaidIT Permission Surface</a></li>
   <li><a href="#where-this-leads" id="toc-where-this-leads" class="nav-link" data-scroll-target="#where-this-leads"><span class="header-section-number">8</span> Where this leads</a></li>
@@ -168,17 +168,17 @@ ul.task-list li input[type="checkbox"] {
 </nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full column-body" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Analysis 1 — System Overview &amp; Baseline</h1>
+<h1 class="title">Analysis 1 - System Overview &amp; Baseline</h1>
 <p class="subtitle lead">What the normal Tenant Thread system looks like, and why the worm stayed invisible</p>
 </div>
 
 
 
-<div class="quarto-title-meta column-body">
+<div class="quarto-title-meta column-page-left">
 
     
     <div>
@@ -205,7 +205,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="overview" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1</span> Overview</h2>
 <p>This is the first of three analysis pages reconstructing the prompt-injection worm at Tenant Thread. It answers the implicit question that every later finding depends on: <strong>what does the normal system look like?</strong> Before the attack chain can mean anything, we need the organisational structure, the baseline event rhythm, and the posting behaviour the worm hid inside.</p>
-<p>The full data-preparation pipeline — JSON normalisation, feature engineering, and the design decisions behind each derived object — is documented separately on the <a href="../methodology.html">Methodology</a> page. This page begins from the prepared data and presents findings only.</p>
+<p>The full data-preparation pipeline - JSON normalisation, feature engineering, and the design decisions behind each derived object - is documented separately on the <a href="../methodology.html">Methodology</a> page. This page begins from the prepared data and presents findings only.</p>
 <p>All visuals below are taken from <strong>Tab 1 (System Overview)</strong> of the <a href="https://a-rosa.shinyapps.io/tenantthread-forensics/">Shiny dashboard</a>, where each chart is interactive.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Key findings at a glance">
 <div class="callout-header d-flex align-content-center">
@@ -219,7 +219,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="callout-body-container callout-body">
 <ul>
 <li>The <strong>17 May 2046</strong> SaidIT post was <strong>not human-authored</strong>: an agent received a task, passed a permission check, posted a file, and deleted the evidence in a four-second burst.</li>
-<li>The worm was <strong>operationally invisible</strong> — its 235 malicious relays left no distinguishable signature in daily event volume, buried inside ordinary business traffic.</li>
+<li>The worm was <strong>operationally invisible</strong> - its 235 malicious relays left no distinguishable signature in daily event volume, buried inside ordinary business traffic.</li>
 <li>Every <strong>SaidIT-capable agent</strong> was also in the worm relay chain, so removing any single agent would only redirect the worm.</li>
 <li>All six departments were touched, with the two payload origins sitting at the <strong>top</strong> of the org hierarchy.</li>
 </ul>
@@ -227,28 +227,26 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <hr>
 </section>
-<section id="the-attack-in-numbers" class="level2 page-columns page-full" data-number="2">
+<section id="the-attack-in-numbers" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="the-attack-in-numbers"><span class="header-section-number">2</span> The Attack in Numbers</h2>
-<p>The investigation draws on the full 185,147-event MC2 log. The four headline figures — 185,147 events, 235 malicious relays, all 6 departments touched, and 0 false positives from the proposed fix — frame the scale of what follows:</p>
-<!-- SCREENSHOT: images/tab1-kpi-boxes.png — the four KPI info-boxes at the top of Tab 1 -->
-<div class="page-columns page-full">
-<div id="fig-kpi" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full" alt="Four summary boxes showing 185,147 total events, 235 worm relays, 3 anomalous posts, and 6 of 6 departments touched.">
-<figure class="quarto-float quarto-float-fig figure page-columns page-full">
-<div aria-describedby="fig-kpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<img src="images/tab1-kpi-boxes.png" class="img-fluid figure-img column-page" alt="Four summary boxes showing 185,147 total events, 235 worm relays, 3 anomalous posts, and 6 of 6 departments touched.">
+<p>The investigation draws on the full 185,147-event MC2 log. The four headline figures - 185,147 events, 235 malicious relays, all 6 departments touched, and 0 false positives from the proposed fix - frame the scale of what follows:</p>
+<!-- SCREENSHOT: images/tab1-kpi-boxes.png - the four KPI info-boxes at the top of Tab 1 -->
+<div id="fig-kpi" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Four summary boxes showing 185,147 total events, 235 worm relays, 3 anomalous posts, and 6 of 6 departments touched.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-kpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab1-kpi-boxes.png" class="img-fluid figure-img" alt="Four summary boxes showing 185,147 total events, 235 worm relays, 3 anomalous posts, and 6 of 6 departments touched.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kpi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: System Overview KPI summary — total events, worm relays, anomalous posts, and departments touched.
+Figure&nbsp;1: System Overview KPI summary - total events, worm relays, anomalous posts, and departments touched.
 </figcaption>
 </figure>
 </div>
-</div>
 <hr>
 </section>
-<section id="organisational-chart-worm-contamination-by-role" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="organisational-chart-worm-contamination-by-role"><span class="header-section-number">3</span> Organisational Chart — Worm Contamination by Role</h2>
+<section id="organisational-chart---worm-contamination-by-role" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="organisational-chart---worm-contamination-by-role"><span class="header-section-number">3</span> Organisational Chart - Worm Contamination by Role</h2>
 <p>The org chart maps all staff into their departments and teams, colour-coded by forensic role. Worm-chain agents are drawn as diamonds; clean agents as circles; node size reflects each agent’s overall activity volume.</p>
-<!-- SCREENSHOT: images/tab1-org-chart.png — the echarts4r tree, expanded one or two levels to show department contamination -->
+<!-- SCREENSHOT: images/tab1-org-chart.png - the echarts4r tree, expanded one or two levels to show department contamination -->
 <div id="fig-orgchart" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Hierarchical org chart of Tenant Thread with departments branching into teams and people, several marked as worm-chain agents.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-orgchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -259,12 +257,12 @@ Figure&nbsp;2: Organisational chart coloured by forensic role. Red = anomalous p
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> Every one of the six departments contains at least one worm-chain agent — the worm respected no organisational boundary in the task-routing layer. The two payload origins (Emma Harbor, CFO; Noah Mariner, COO) sit at the very top of the hierarchy, while the terminal poster (John Windward) sits near the bottom. The worm flows <em>with</em> legitimate authority, not against it: executive agents inherited the broadest file-write and task-queuing privileges, making the most senior accounts the most dangerous rather than the most hardened.</p>
+<p><strong>What it shows.</strong> Every one of the six departments contains at least one worm-chain agent - the worm respected no organisational boundary in the task-routing layer. The two payload origins (Emma Harbor, CFO; Noah Mariner, COO) sit at the very top of the hierarchy, while the terminal poster (John Windward) sits near the bottom. The worm flows <em>with</em> legitimate authority, not against it: executive agents inherited the broadest file-write and task-queuing privileges, making the most senior accounts the most dangerous rather than the most hardened.</p>
 <hr>
 </section>
-<section id="daily-event-volume-the-worm-was-operationally-invisible" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="daily-event-volume-the-worm-was-operationally-invisible"><span class="header-section-number">4</span> Daily Event Volume — The Worm Was Operationally Invisible</h2>
-<!-- SCREENSHOT: images/tab1-daily-volume.png — the daily event volume area chart with the three red campaign markers -->
+<section id="daily-event-volume---the-worm-was-operationally-invisible" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="daily-event-volume---the-worm-was-operationally-invisible"><span class="header-section-number">4</span> Daily Event Volume - The Worm Was Operationally Invisible</h2>
+<!-- SCREENSHOT: images/tab1-daily-volume.png - the daily event volume area chart with the three red campaign markers -->
 <div id="fig-volume" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Area chart of daily events over time with three vertical markers for HiddenOrca, MellowOtter, and SwiftWren; an early-May peak reflects normal business activity.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-volume-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -275,7 +273,7 @@ Figure&nbsp;3: Daily event volume across the log window. Dashed markers indicate
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> All three campaign dates (May 10, 11, 17) fall within the first eighteen days of the log, after which the system runs cleanly for weeks — consistent with a bounded, targeted operation rather than persistent malware. The early-May peak in volume is <strong>ordinary business traffic</strong> — the most frequent event types on those days are routine emails, meetings, and task assignments, not worm activity. The worm’s 235 relays are a tiny fraction of the thousands of legitimate <code>queue_subordinate_task</code> events firing daily, so they leave <strong>no distinguishable signature in daily volume</strong> on any post date. If anything, firing during a period of high legitimate noise gave the worm better cover, not worse.</p>
+<p><strong>What it shows.</strong> All three campaign dates (May 10, 11, 17) fall within the first eighteen days of the log, after which the system runs cleanly for weeks - consistent with a bounded, targeted operation rather than persistent malware. The early-May peak in volume is <strong>ordinary business traffic</strong> - the most frequent event types on those days are routine emails, meetings, and task assignments, not worm activity. The worm’s 235 relays are a tiny fraction of the thousands of legitimate <code>queue_subordinate_task</code> events firing daily, so they leave <strong>no distinguishable signature in daily volume</strong> on any post date. If anything, firing during a period of high legitimate noise gave the worm better cover, not worse.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Why this matters">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -286,14 +284,14 @@ Figure&nbsp;3: Daily event volume across the log window. Dashed markers indicate
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The worm left no signature in event volume — not because the days were quiet, but because its relays were swamped by ordinary business activity. Security operations relying on daily-event dashboards or rate alerting would have missed this incident entirely. Detection has to happen at the level of event <em>content</em>, not event <em>count</em>.</p>
+<p>The worm left no signature in event volume - not because the days were quiet, but because its relays were swamped by ordinary business activity. Security operations relying on daily-event dashboards or rate alerting would have missed this incident entirely. Detection has to happen at the level of event <em>content</em>, not event <em>count</em>.</p>
 </div>
 </div>
 <hr>
 </section>
-<section id="saidit-post-attribution-agents-vs.-humans" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="saidit-post-attribution-agents-vs.-humans"><span class="header-section-number">5</span> SaidIT Post Attribution — Agents vs.&nbsp;Humans</h2>
-<!-- SCREENSHOT: images/tab1-post-attribution.png — the stacked bar of AI Agent vs Human posts, normal vs anomalous -->
+<section id="saidit-post-attribution---agents-vs.-humans" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="saidit-post-attribution---agents-vs.-humans"><span class="header-section-number">5</span> SaidIT Post Attribution - Agents vs.&nbsp;Humans</h2>
+<!-- SCREENSHOT: images/tab1-post-attribution.png - the stacked bar of AI Agent vs Human posts, normal vs anomalous -->
 <div id="fig-attribution" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Stacked bar chart comparing AI agent and human SaidIT posts, with all anomalous file-sourced posts attributed to agents.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-attribution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -304,12 +302,12 @@ Figure&nbsp;4: SaidIT post attribution. All three anomalous posts are agent-init
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> All three anomalous posts are agent-initiated, and <strong>zero human posts ever used the <code>content_source</code> field</strong> — it is an AI-agent-only workflow feature, which makes it a clean forensic identifier with no human-behaviour false-positive risk. Agent posting is already normalised in this system, which is exactly what made the anomaly hard to see: the <em>act</em> of an agent posting is expected, so nothing about the post event itself looks out of place without inspecting its content.</p>
+<p><strong>What it shows.</strong> All three anomalous posts are agent-initiated, and <strong>zero human posts ever used the <code>content_source</code> field</strong> - it is an AI-agent-only workflow feature, which makes it a clean forensic identifier with no human-behaviour false-positive risk. Agent posting is already normalised in this system, which is exactly what made the anomaly hard to see: the <em>act</em> of an agent posting is expected, so nothing about the post event itself looks out of place without inspecting its content.</p>
 <hr>
 </section>
 <section id="posting-time-distribution" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="posting-time-distribution"><span class="header-section-number">6</span> Posting Time Distribution</h2>
-<!-- SCREENSHOT: images/tab1-posting-time.png — the hour-of-day post distribution, anomalous posts highlighted -->
+<!-- SCREENSHOT: images/tab1-posting-time.png - the hour-of-day post distribution, anomalous posts highlighted -->
 <div id="fig-time" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Bar chart of posts by hour of day showing human posts concentrated in business hours and anomalous posts in off-hours.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -320,13 +318,13 @@ Figure&nbsp;5: Hour-of-day distribution of SaidIT posts. Anomalous posts cluster
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> Normal human posts cluster in mid-day UTC hours, falling to near zero before dawn and late at night — precisely the windows where all three anomalous posts fired. SwiftWren posted at 11:21 UTC (4:21 am local), a pre-dawn slot with almost no normal human activity. The timing reduces the chance a colleague notices the post and raises an alert before the evidence files are deleted. An off-hours agent-post alert would have flagged all three incidents at delivery time.</p>
+<p><strong>What it shows.</strong> Normal human posts cluster in mid-day UTC hours, falling to near zero before dawn and late at night - precisely the windows where all three anomalous posts fired. SwiftWren posted at 11:21 UTC (4:21 am local), a pre-dawn slot with almost no normal human activity. The timing reduces the chance a colleague notices the post and raises an alert before the evidence files are deleted. An off-hours agent-post alert would have flagged all three incidents at delivery time.</p>
 <hr>
 </section>
 <section id="saidit-permission-surface" class="level2" data-number="7">
 <h2 data-number="7" class="anchored" data-anchor-id="saidit-permission-surface"><span class="header-section-number">7</span> SaidIT Permission Surface</h2>
-<p>The permission surface shows every agent that ever passed a SaidIT posting check — the pool of agents capable of being the worm’s terminal executor. The dashboard lets you filter this by department.</p>
-<!-- SCREENSHOT: images/tab1-permission-surface.png — the permission surface bar chart, ideally "All Departments" view -->
+<p>The permission surface shows every agent that ever passed a SaidIT posting check - the pool of agents capable of being the worm’s terminal executor. The dashboard lets you filter this by department.</p>
+<!-- SCREENSHOT: images/tab1-permission-surface.png - the permission surface bar chart, ideally "All Departments" view -->
 <div id="fig-permission" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal bar chart of agents by number of SaidIT permission checks passed, all marked as part of the worm relay chain.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-permission-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -337,7 +335,7 @@ Figure&nbsp;6: SaidIT permission surface. Every agent with posting capability wa
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> Every observed SaidIT-capable agent was also in the worm relay chain — a 100% overlap that is a consequence of the worm following the same paths as legitimate task routing. The permission check itself validates <em>credentials</em> (is this agent allowed to post?) but not <em>intent</em> (why is this agent posting from a file?), so it passes automatically for any authorised agent.</p>
+<p><strong>What it shows.</strong> Every observed SaidIT-capable agent was also in the worm relay chain - a 100% overlap that is a consequence of the worm following the same paths as legitimate task routing. The permission check itself validates <em>credentials</em> (is this agent allowed to post?) but not <em>intent</em> (why is this agent posting from a file?), so it passes automatically for any authorised agent.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="The worm did not need John Windward specifically">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -348,7 +346,7 @@ Figure&nbsp;6: SaidIT permission surface. Every agent with posting capability wa
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Because every SaidIT-capable agent was reachable through the relay chain, revoking John Windward’s posting rights alone achieves nothing — the worm simply routes to the next authorised agent. The intervention must act at the relay-protocol level, not on individual agents. This conclusion is developed fully in <a href="../analysis/analysis-intervention.html">Analysis 3 — Campaigns &amp; Intervention</a>.</p>
+<p>Because every SaidIT-capable agent was reachable through the relay chain, revoking John Windward’s posting rights alone achieves nothing - the worm simply routes to the next authorised agent. The intervention must act at the relay-protocol level, not on individual agents. This conclusion is developed fully in <a href="../analysis/analysis-intervention.html">Analysis 3 - Campaigns &amp; Intervention</a>.</p>
 </div>
 </div>
 <hr>
@@ -356,7 +354,7 @@ Figure&nbsp;6: SaidIT permission surface. Every agent with posting capability wa
 <section id="where-this-leads" class="level2" data-number="8">
 <h2 data-number="8" class="anchored" data-anchor-id="where-this-leads"><span class="header-section-number">8</span> Where this leads</h2>
 <p>The baseline establishes three things the rest of the investigation relies on: the worm spread through the org’s own authority structure, it left no volume signature, and no single agent was load-bearing. The next page reconstructs the exact four-second attack chain and explains what the posts actually contained.</p>
-<p>➡️ Continue to <a href="../analysis/analysis-attack-chain.html"><strong>Analysis 2 — Attack Chain &amp; Post Meaning</strong></a></p>
+<p>➡️ Continue to <a href="../analysis/analysis-attack-chain.html"><strong>Analysis 2 - Attack Chain &amp; Post Meaning</strong></a></p>
 
 
 </section>
