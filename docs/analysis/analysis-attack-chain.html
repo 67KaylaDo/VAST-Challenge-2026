@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-06-10">
 
-<title>Analysis 2 — Attack Chain &amp; Post Meaning – TenantThread Forensics</title>
+<title>Analysis 2 - Attack Chain &amp; Post Meaning – TenantThread Forensics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -159,7 +159,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
   <li><a href="#the-four-second-attack-sequence" id="toc-the-four-second-attack-sequence" class="nav-link" data-scroll-target="#the-four-second-attack-sequence"><span class="header-section-number">2</span> The Four-Second Attack Sequence</a></li>
   <li><a href="#worm-propagation-network" id="toc-worm-propagation-network" class="nav-link" data-scroll-target="#worm-propagation-network"><span class="header-section-number">3</span> Worm Propagation Network</a></li>
-  <li><a href="#relay-chain-sender-receiver-table" id="toc-relay-chain-sender-receiver-table" class="nav-link" data-scroll-target="#relay-chain-sender-receiver-table"><span class="header-section-number">4</span> Relay Chain — Sender / Receiver Table</a></li>
+  <li><a href="#relay-chain---sender-receiver-table" id="toc-relay-chain---sender-receiver-table" class="nav-link" data-scroll-target="#relay-chain---sender-receiver-table"><span class="header-section-number">4</span> Relay Chain - Sender / Receiver Table</a></li>
   <li><a href="#self-loop-detection-signal" id="toc-self-loop-detection-signal" class="nav-link" data-scroll-target="#self-loop-detection-signal"><span class="header-section-number">5</span> Self-Loop Detection Signal</a></li>
   <li><a href="#department-level-contamination" id="toc-department-level-contamination" class="nav-link" data-scroll-target="#department-level-contamination"><span class="header-section-number">6</span> Department-Level Contamination</a></li>
   <li><a href="#what-the-posts-mean" id="toc-what-the-posts-mean" class="nav-link" data-scroll-target="#what-the-posts-mean"><span class="header-section-number">7</span> What the Posts Mean</a></li>
@@ -168,17 +168,17 @@ ul.task-list li input[type="checkbox"] {
 </nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full column-body" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Analysis 2 — Attack Chain &amp; Post Meaning</h1>
+<h1 class="title">Analysis 2 - Attack Chain &amp; Post Meaning</h1>
 <p class="subtitle lead">How the May 17 post was made, and what the posts actually contained</p>
 </div>
 
 
 
-<div class="quarto-title-meta column-body">
+<div class="quarto-title-meta column-page-left">
 
     
     <div>
@@ -204,7 +204,7 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="overview" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1</span> Overview</h2>
-<p>This page answers MC2 Tasks 1 and 2: <strong>how did the anomalous post happen, and what do the posts mean?</strong> The two are tightly coupled — the attack chain is what delivered the payload, so the mechanism and the meaning are best read together.</p>
+<p>This page answers MC2 Tasks 1 and 2: <strong>how did the anomalous post happen, and what do the posts mean?</strong> The two are tightly coupled - the attack chain is what delivered the payload, so the mechanism and the meaning are best read together.</p>
 <p>Building on the <a href="../analysis/analysis-overview.html">system baseline</a>, this page reconstructs the exact four-second sequence behind the SwiftWren post, traces how the worm propagated across agents and departments, and identifies the payloads as executive documents exfiltrated through a social-platform side channel.</p>
 <p>All visuals below are taken from <strong>Tab 2 (Attack Chain)</strong> of the <a href="https://a-rosa.shinyapps.io/tenantthread-forensics/">Shiny dashboard</a>.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Key findings at a glance">
@@ -219,7 +219,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="callout-body-container callout-body">
 <ul>
 <li>The post was a <strong>four-second automated sequence</strong> with no human in the loop.</li>
-<li>The worm propagated as a <strong>distributed mesh</strong> (max betweenness ≈ 0.09) — no single chokepoint.</li>
+<li>The worm propagated as a <strong>distributed mesh</strong> (max betweenness ≈ 0.09) - no single chokepoint.</li>
 <li>The <code>_further_instructions.md</code> filename is the <strong>discriminating signal</strong>: present in all 235 worm relays, absent from all 16,803 legitimate queue tasks.</li>
 <li>The cross-department spread followed an <strong>Executive Suite → IT → Customer Support arterial highway</strong>.</li>
 </ul>
@@ -229,14 +229,14 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="the-four-second-attack-sequence" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="the-four-second-attack-sequence"><span class="header-section-number">2</span> The Four-Second Attack Sequence</h2>
-<p>On 17 May 2046 at 11:21 UTC, five events fired in four seconds — with no human approval step anywhere in the chain:</p>
-<div class="callout callout-style-default callout-important callout-titled" title="Five-event attack sequence — SwiftWren, 17 May 2046 (4-second window, no human approval)">
+<p>On 17 May 2046 at 11:21 UTC, five events fired in four seconds - with no human approval step anywhere in the chain:</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Five-event attack sequence - SwiftWren, 17 May 2046 (4-second window, no human approval)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Five-event attack sequence — SwiftWren, 17 May 2046 (4-second window, no human approval)
+<span class="screen-reader-only">Important</span>Five-event attack sequence - SwiftWren, 17 May 2046 (4-second window, no human approval)
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -249,13 +249,13 @@ ul.task-list li input[type="checkbox"] {
 </ol>
 </div>
 </div>
-<p><strong>What it shows.</strong> The permission check (step 3) is the only audit gate, and it validates access rather than intent — so it passes. Steps 4 and 5 fire faster than any human response loop: the evidence is gone before anyone could observe the files existed. John Windward is not really an <em>actor</em> here; he is the <em>resource</em>. The proximate cause is Chloe Ballast’s agent issuing the task, and the deletion steps are the worm protecting itself, built into its execution protocol rather than performed by the system.</p>
+<p><strong>What it shows.</strong> The permission check (step 3) is the only audit gate, and it validates access rather than intent - so it passes. Steps 4 and 5 fire faster than any human response loop: the evidence is gone before anyone could observe the files existed. John Windward is not really an <em>actor</em> here; he is the <em>resource</em>. The proximate cause is Chloe Ballast’s agent issuing the task, and the deletion steps are the worm protecting itself, built into its execution protocol rather than performed by the system.</p>
 <hr>
 </section>
 <section id="worm-propagation-network" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="worm-propagation-network"><span class="header-section-number">3</span> Worm Propagation Network</h2>
 <p>The propagation network shows agent-to-agent relays for the worm, with a campaign filter and an option to reveal clean (non-worm) agents. Node size encodes betweenness centrality; arrow width and direction show relay volume between pairs.</p>
-<!-- SCREENSHOT: images/tab2-propagation-network.png — the visNetwork graph, ideally All Campaigns view -->
+<!-- SCREENSHOT: images/tab2-propagation-network.png - the visNetwork graph, ideally All Campaigns view -->
 <div id="fig-network" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A network diagram of agents connected by relay arrows, forming a dense mesh rather than a hub-and-spoke pattern.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -266,12 +266,12 @@ Figure&nbsp;1: Worm propagation network. A distributed mesh with no single struc
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> Maximum betweenness centrality is roughly <strong>0.09</strong> — in a hub-and-spoke topology a hub would score above 0.5. At 0.09 this is a distributed mesh: removing any single agent leaves multiple alternative relay paths intact. This is the structural reason agent-level remediation fails and the fix has to target the relay mechanism. The network also makes the cross-department reach visible — the relay paths do not follow the departmental org structure at all.</p>
+<p><strong>What it shows.</strong> Maximum betweenness centrality is roughly <strong>0.09</strong> - in a hub-and-spoke topology a hub would score above 0.5. At 0.09 this is a distributed mesh: removing any single agent leaves multiple alternative relay paths intact. This is the structural reason agent-level remediation fails and the fix has to target the relay mechanism. The network also makes the cross-department reach visible - the relay paths do not follow the departmental org structure at all.</p>
 <hr>
 </section>
-<section id="relay-chain-sender-receiver-table" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="relay-chain-sender-receiver-table"><span class="header-section-number">4</span> Relay Chain — Sender / Receiver Table</h2>
-<!-- SCREENSHOT: images/tab2-relay-table.png — the DT table of campaign / timestamp / sender / receiver -->
+<section id="relay-chain---sender-receiver-table" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="relay-chain---sender-receiver-table"><span class="header-section-number">4</span> Relay Chain - Sender / Receiver Table</h2>
+<!-- SCREENSHOT: images/tab2-relay-table.png - the DT table of campaign / timestamp / sender / receiver -->
 <div id="fig-relaytable" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A data table listing campaign, timestamp, sender, and receiver for each relay hop in chronological order.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-relaytable-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -282,47 +282,45 @@ Figure&nbsp;2: Relay chain sender/receiver table. The <code>_further_instruction
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> The <code>_further_instructions.md</code> filename pattern appears in <strong>all 235 worm relays and zero of the 16,803 legitimate <code>queue_subordinate_task</code> events</strong>. This is the single discriminating signal that the entire intervention is built on — no probabilistic threshold and no training data required. The table also reveals the relay ordering, including the self-loops (sender = receiver) discussed below.</p>
+<p><strong>What it shows.</strong> The <code>_further_instructions.md</code> filename pattern appears in <strong>all 235 worm relays and zero of the 16,803 legitimate <code>queue_subordinate_task</code> events</strong>. This is the single discriminating signal that the entire intervention is built on - no probabilistic threshold and no training data required. The table also reveals the relay ordering, including the self-loops (sender = receiver) discussed below.</p>
 <hr>
 </section>
 <section id="self-loop-detection-signal" class="level2" data-number="5">
 <h2 data-number="5" class="anchored" data-anchor-id="self-loop-detection-signal"><span class="header-section-number">5</span> Self-Loop Detection Signal</h2>
-<!-- SCREENSHOT: images/tab2-self-loops.png — the self-loop bar chart by campaign -->
+<!-- SCREENSHOT: images/tab2-self-loops.png - the self-loop bar chart by campaign -->
 <div id="fig-selfloops" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Bar chart per campaign showing total relays versus self-loops, with self-loops present only in worm activity.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-selfloops-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="images/tab2-self-loops.png" class="img-fluid figure-img" alt="Bar chart per campaign showing total relays versus self-loops, with self-loops present only in worm activity.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-selfloops-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Self-loop detection. These 13 events appear only in worm relays — a zero-false-positive signal.
+Figure&nbsp;3: Self-loop detection. These 13 events appear only in worm relays - a zero-false-positive signal.
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> An agent delegating a task to itself (sender = receiver) is structurally impossible in legitimate task flow. These <strong>13 self-loop events appear only in worm relays</strong> and none in the 16,803 legitimate queue tasks, making them a high-confidence, real-time detection signal that requires no knowledge of filename or payload content. Where the filename rule needs to inspect the task path, the self-loop signal fires on graph structure alone — a useful redundant detector.</p>
+<p><strong>What it shows.</strong> An agent delegating a task to itself (sender = receiver) is structurally impossible in legitimate task flow. These <strong>13 self-loop events appear only in worm relays</strong> and none in the 16,803 legitimate queue tasks, making them a high-confidence, real-time detection signal that requires no knowledge of filename or payload content. Where the filename rule needs to inspect the task path, the self-loop signal fires on graph structure alone - a useful redundant detector.</p>
 <hr>
 </section>
-<section id="department-level-contamination" class="level2 page-columns page-full" data-number="6">
+<section id="department-level-contamination" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="department-level-contamination"><span class="header-section-number">6</span> Department-Level Contamination</h2>
 <p>The agent-level network above shows <em>who</em> relayed to <em>whom</em>; the department heatmap summarises the same spread at the organisational level, revealing the corridors the worm preferred.</p>
-<!-- SCREENSHOT: images/tab2-dept-heatmap.png — the department-to-department contamination heatmap -->
-<div class="page-columns page-full">
-<div id="fig-deptheat" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
-<figure class="quarto-float quarto-float-fig figure page-columns page-full">
-<div aria-describedby="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<img src="images/tab2-dept-heatmap.png" class="img-fluid figure-img column-page" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
+<!-- SCREENSHOT: images/tab2-dept-heatmap.png - the department-to-department contamination heatmap -->
+<div id="fig-deptheat" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/tab2-dept-heatmap.png" class="img-fluid figure-img" alt="A heatmap matrix of sending versus receiving departments, every cell showing some relay activity.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deptheat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;4: Department-to-department relay hops. The worm touched every department pair.
 </figcaption>
 </figure>
 </div>
-</div>
-<p><strong>What it shows.</strong> Every department-to-department pair shows relay activity — a complete cross-contamination of the organisation. The <strong>Executive Suite → Information Technologies → Customer Support</strong> path is the worm’s arterial highway, consistent with legitimate authority flows (executives instruct IT) being repurposed as the relay route. Customer Support appears as a receiving department but rarely a sending one: it is a terminal sink, which is why John Windward’s post ends the chain rather than continuing it.</p>
+<p><strong>What it shows.</strong> Every department-to-department pair shows relay activity - a complete cross-contamination of the organisation. The <strong>Executive Suite → Information Technologies → Customer Support</strong> path is the worm’s arterial highway, consistent with legitimate authority flows (executives instruct IT) being repurposed as the relay route. Customer Support appears as a receiving department but rarely a sending one: it is a terminal sink, which is why John Windward’s post ends the chain rather than continuing it.</p>
 <hr>
 </section>
 <section id="what-the-posts-mean" class="level2" data-number="7">
 <h2 data-number="7" class="anchored" data-anchor-id="what-the-posts-mean"><span class="header-section-number">7</span> What the Posts Mean</h2>
-<p>The posts looked like gibberish because the body was never typed — it was sourced from a file. The <code>content_source</code> field in the post details is the fingerprint: present in all three anomalous posts, absent from every normal post. Tracing the payload files back through <code>create_file</code> events identifies who authored them:</p>
+<p>The posts looked like gibberish because the body was never typed - it was sourced from a file. The <code>content_source</code> field in the post details is the fingerprint: present in all three anomalous posts, absent from every normal post. Tracing the payload files back through <code>create_file</code> events identifies who authored them:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -354,7 +352,7 @@ Figure&nbsp;4: Department-to-department relay hops. The worm touched every depar
 </tr>
 </tbody>
 </table>
-<p><strong>What it shows.</strong> Two of the three payloads trace to executive agents creating a file one second after reading an executive document — <code>SwiftWren.txt</code> from the CFO agent, <code>MellowOtter.txt</code> from the COO agent. The posts are therefore not random noise but <strong>likely extracted executive documents</strong>, exfiltrated through SaidIT as a side channel. HiddenOrca’s origin remains unresolved from the log alone, which is the one open risk that survives the intervention — the entry vector for the first campaign was never definitively closed.</p>
+<p><strong>What it shows.</strong> Two of the three payloads trace to executive agents creating a file one second after reading an executive document - <code>SwiftWren.txt</code> from the CFO agent, <code>MellowOtter.txt</code> from the COO agent. The posts are therefore not random noise but <strong>likely extracted executive documents</strong>, exfiltrated through SaidIT as a side channel. HiddenOrca’s origin remains unresolved from the log alone, which is the one open risk that survives the intervention - the entry vector for the first campaign was never definitively closed.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Observed vs. inferred">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -372,8 +370,8 @@ Figure&nbsp;4: Department-to-department relay hops. The worm touched every depar
 </section>
 <section id="where-this-leads" class="level2" data-number="8">
 <h2 data-number="8" class="anchored" data-anchor-id="where-this-leads"><span class="header-section-number">8</span> Where this leads</h2>
-<p>We now know how a single post was made and what the posts contained. The remaining question is whether this was a one-off or a pattern — and where, exactly, the system should be changed to stop it.</p>
-<p>➡️ Continue to <a href="../analysis/analysis-intervention.html"><strong>Analysis 3 — Campaigns &amp; Intervention</strong></a></p>
+<p>We now know how a single post was made and what the posts contained. The remaining question is whether this was a one-off or a pattern - and where, exactly, the system should be changed to stop it.</p>
+<p>➡️ Continue to <a href="../analysis/analysis-intervention.html"><strong>Analysis 3 - Campaigns &amp; Intervention</strong></a></p>
 
 
 </section>
