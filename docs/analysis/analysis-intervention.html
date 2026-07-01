@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-06-10">
 
-<title>Analysis 3 — Campaigns &amp; Intervention – TenantThread Forensics</title>
+<title>Analysis 3 - Campaigns &amp; Intervention – TenantThread Forensics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -164,25 +164,25 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#relay-activity-calendar" id="toc-relay-activity-calendar" class="nav-link" data-scroll-target="#relay-activity-calendar"><span class="header-section-number">6</span> Relay Activity Calendar</a></li>
   <li><a href="#the-optimal-chokepoint" id="toc-the-optimal-chokepoint" class="nav-link" data-scroll-target="#the-optimal-chokepoint"><span class="header-section-number">7</span> The Optimal Chokepoint</a></li>
   <li><a href="#intervention-design" id="toc-intervention-design" class="nav-link" data-scroll-target="#intervention-design"><span class="header-section-number">8</span> Intervention Design</a></li>
-  <li><a href="#zero-false-positives-the-rule-is-safe-to-deploy" id="toc-zero-false-positives-the-rule-is-safe-to-deploy" class="nav-link" data-scroll-target="#zero-false-positives-the-rule-is-safe-to-deploy"><span class="header-section-number">9</span> Zero False Positives — The Rule Is Safe to Deploy</a></li>
-  <li><a href="#counterfactual-blocking-at-hop-1" id="toc-counterfactual-blocking-at-hop-1" class="nav-link" data-scroll-target="#counterfactual-blocking-at-hop-1"><span class="header-section-number">10</span> Counterfactual — Blocking at Hop 1</a></li>
+  <li><a href="#zero-false-positives---the-rule-is-safe-to-deploy" id="toc-zero-false-positives---the-rule-is-safe-to-deploy" class="nav-link" data-scroll-target="#zero-false-positives---the-rule-is-safe-to-deploy"><span class="header-section-number">9</span> Zero False Positives - The Rule Is Safe to Deploy</a></li>
+  <li><a href="#counterfactual---blocking-at-hop-1" id="toc-counterfactual---blocking-at-hop-1" class="nav-link" data-scroll-target="#counterfactual---blocking-at-hop-1"><span class="header-section-number">10</span> Counterfactual - Blocking at Hop 1</a></li>
   <li><a href="#residual-risk-assessment" id="toc-residual-risk-assessment" class="nav-link" data-scroll-target="#residual-risk-assessment"><span class="header-section-number">11</span> Residual Risk Assessment</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">12</span> Conclusion</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content page-columns page-full column-body" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Analysis 3 — Campaigns &amp; Intervention</h1>
+<h1 class="title">Analysis 3 - Campaigns &amp; Intervention</h1>
 <p class="subtitle lead">Prior occurrences, recurrence risk, and the single rule that stops every campaign</p>
 </div>
 
 
 
-<div class="quarto-title-meta column-page-left">
+<div class="quarto-title-meta column-body">
 
     
     <div>
@@ -221,8 +221,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>SwiftWren was the <strong>third</strong> campaign, following HiddenOrca (May 10) and MellowOtter (May 11) — a repeatable failure, not a glitch.</li>
-<li>The three campaigns <strong>differ in scale but not mechanism</strong> — each uses the same instruction-file relay pattern before a file-sourced post.</li>
+<li>SwiftWren was the <strong>third</strong> campaign to post, following HiddenOrca (May 10) and MellowOtter (May 11) - a repeatable failure, not a glitch.</li>
+<li>The three campaigns <strong>differ in scale but not mechanism</strong> - each uses the same instruction-file relay pattern before a file-sourced post.</li>
 <li>Agents appearing across multiple campaigns mark the <strong>structural</strong> exposure points; the vulnerability is a property of the routing system, not of any one campaign.</li>
 <li>A single relay-block rule covers <strong>235 / 235</strong> malicious relays with <strong>0 / 16,803</strong> false positives, and applied at hop 1 it prevents every post before any instruction file is read.</li>
 </ul>
@@ -232,7 +232,6 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="three-campaigns-not-one-incident" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="three-campaigns-not-one-incident"><span class="header-section-number">2</span> Three Campaigns, Not One Incident</h2>
-<!-- SCREENSHOT: images/tab3-campaign-timeline.png — the campaign timeline (layered bars per campaign) -->
 <div id="fig-timeline" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A timeline showing the observed windows of the three campaigns, with SwiftWren spanning the longest period.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-timeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -243,12 +242,11 @@ Figure&nbsp;1: Campaign timeline. HiddenOrca, MellowOtter, and SwiftWren each fo
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> Each campaign follows the same shape — an instruction file, a propagated task, and a final file-sourced post. The May 17 SwiftWren post was the third in nine days, following HiddenOrca on May 10 and MellowOtter on May 11; neither earlier campaign triggered a logged incident-response action. SwiftWren is the most persistent of the three, spanning the longest window and touching the widest set of agents. The escalation from HiddenOrca to SwiftWren — growing relay counts, longer duration, more agents — reads as iterative refinement of the same worm rather than three unrelated events.</p>
+<p><strong>What it shows.</strong> Each campaign follows the same shape - an instruction file, a propagated task, and a final file-sourced post. The May 17 SwiftWren post was the third in nine days, following HiddenOrca on May 10 and MellowOtter on May 11; neither earlier campaign triggered a logged incident-response action. SwiftWren is the most persistent of the three, spanning the longest window and touching the widest set of agents - it is the largest campaign on every axis, while MellowOtter was a smaller run between the two larger ones. What recurs is the mechanism, not a steady escalation: the same relay-then-post shape appears in all three, which reads as one worm reused rather than three unrelated events.</p>
 <hr>
 </section>
 <section id="comparative-campaign-statistics" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="comparative-campaign-statistics"><span class="header-section-number">3</span> Comparative Campaign Statistics</h2>
-<!-- SCREENSHOT: images/tab3-comparison-table.png — the campaign comparison DT table -->
 <div id="fig-comparison" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A table comparing the three campaigns across relay count, first and last seen, duration, agents touched, and self-loops.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -259,12 +257,11 @@ Figure&nbsp;2: Comparative campaign statistics: relay count, duration, agents to
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> The three campaigns differ in scale — relay counts, durations, and agent reach all increase toward SwiftWren — but the underlying mechanism is constant across all three. Each uses the same <code>_further_instructions.md</code> relay pattern ahead of a <code>content_source</code> post. This is the key structural fact for the intervention: because the mechanism never changes, a single rule targeting that mechanism covers every campaign at once, including any future campaign that reuses the pattern.</p>
+<p><strong>What it shows.</strong> The three campaigns differ in scale - SwiftWren is the largest on every measure (relay count, duration, and agent reach), with MellowOtter the smallest and HiddenOrca in between - but the underlying mechanism is constant across all three. Each uses the same <code>_further_instructions.md</code> relay pattern ahead of a <code>content_source</code> post. This is the key structural fact for the intervention: because the mechanism never changes, a single rule targeting that mechanism covers every campaign at once, including any future campaign that reuses the pattern.</p>
 <hr>
 </section>
 <section id="relay-velocity" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="relay-velocity"><span class="header-section-number">4</span> Relay Velocity</h2>
-<!-- SCREENSHOT: images/tab3-velocity-density.png — the inter-hop interval density plot per campaign -->
 <div id="fig-velocity" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Density curves of inter-hop intervals for each campaign, with SwiftWren peaking at a regular interval.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-velocity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -275,12 +272,11 @@ Figure&nbsp;3: Relay velocity density by campaign. SwiftWren shows a more regula
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> The distribution of inter-hop intervals reveals structural differences that summary statistics would hide. SwiftWren’s relay cadence is more regular and tightly peaked than the earlier campaigns, suggesting a timed or scheduled propagation loop rather than an opportunistic burst. A peaked interval distribution is the signature of automation operating on a clock — consistent with the one-second file-creation spacing seen at the payload-authoring stage.</p>
+<p><strong>What it shows.</strong> The distribution of inter-hop intervals reveals structural differences that summary statistics would hide. SwiftWren’s relay cadence is more regular and tightly peaked than the earlier campaigns, suggesting a timed or scheduled propagation loop rather than an opportunistic burst. A peaked interval distribution is the signature of automation operating on a clock - consistent with the one-second file-creation spacing seen at the payload-authoring stage.</p>
 <hr>
 </section>
 <section id="agent-overlap-across-campaigns" class="level2" data-number="5">
 <h2 data-number="5" class="anchored" data-anchor-id="agent-overlap-across-campaigns"><span class="header-section-number">5</span> Agent Overlap Across Campaigns</h2>
-<!-- SCREENSHOT: images/tab3-agent-overlap.png — the agent overlap bar chart coloured by campaigns touched -->
 <div id="fig-overlap" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A horizontal bar chart of agents coloured by how many campaigns they participated in.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-overlap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -291,12 +287,11 @@ Figure&nbsp;4: Agents ranked by number of campaigns they appear in.
 </figcaption>
 </figure>
 </div>
-<p><strong>What it shows.</strong> Agents appearing in multiple campaigns are the most persistent exposure points. Their recurrence demonstrates that the vulnerability is <strong>structural</strong> — a property of the task-routing system that any campaign can exploit — rather than something specific to one instruction file or one set of agents. This reinforces the baseline finding that no single agent is load-bearing: the same routing affordances are available campaign after campaign.</p>
+<p><strong>What it shows.</strong> Agents appearing in multiple campaigns are the most persistent exposure points. Their recurrence demonstrates that the vulnerability is <strong>structural</strong> - a property of the task-routing system that any campaign can exploit - rather than something specific to one instruction file or one set of agents. This reinforces the baseline finding that no single agent is load-bearing: the same routing affordances are available campaign after campaign.</p>
 <hr>
 </section>
 <section id="relay-activity-calendar" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="relay-activity-calendar"><span class="header-section-number">6</span> Relay Activity Calendar</h2>
-<!-- SCREENSHOT: images/tab3-relay-calendar.png — the day-by-hour calendar heatmap, faceted by campaign -->
 <div id="fig-calendar" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A calendar heatmap showing relay activity by date and hour for each campaign, with SwiftWren covering the broadest spread.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-calendar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -312,57 +307,73 @@ Figure&nbsp;5: Relay activity calendar (day × hour) per campaign.
 </section>
 <section id="the-optimal-chokepoint" class="level2" data-number="7">
 <h2 data-number="7" class="anchored" data-anchor-id="the-optimal-chokepoint"><span class="header-section-number">7</span> The Optimal Chokepoint</h2>
-<p>The propagation analysis in <a href="../analysis/analysis-attack-chain.html">Analysis 2</a> established that the worm is a distributed mesh with a maximum betweenness centrality of roughly 0.09 — no single agent is a structural chokepoint, so removing any one agent leaves viable relay paths intact. That rules out agent-level remediation and points the intervention at the relay <em>mechanism</em> instead.</p>
-<p>The discriminating signal is the filename. The <code>_further_instructions.md</code> pattern appears in <strong>all 235 malicious relays and in none of the 16,803 legitimate <code>queue_subordinate_task</code> events</strong>. That is a clean 235 : 0 separation requiring no probabilistic threshold and no training data — the sharpest forensic signal in the entire log.</p>
+<p>The propagation analysis in <a href="../analysis/analysis-attack-chain.html">Analysis 2</a> established that the worm is a distributed mesh with a maximum betweenness centrality of roughly 0.09 - no single agent is a structural chokepoint, so removing any one agent leaves viable relay paths intact. That rules out agent-level remediation and points the intervention at the relay <em>mechanism</em> instead.</p>
+<p>The discriminating signal is the filename. The <code>_further_instructions.md</code> pattern appears in <strong>all 235 malicious relays and in none of the 16,803 legitimate <code>queue_subordinate_task</code> events</strong>. That is a clean 235 : 0 separation requiring no probabilistic threshold and no training data - the sharpest forensic signal in the entire log.</p>
 <hr>
 </section>
-<section id="intervention-design" class="level2" data-number="8">
+<section id="intervention-design" class="level2 page-columns page-full" data-number="8">
 <h2 data-number="8" class="anchored" data-anchor-id="intervention-design"><span class="header-section-number">8</span> Intervention Design</h2>
 <p>The findings converge on a layered defence. The primary layer is the single filename rule; the secondary and tertiary layers add redundant coverage at the posting and governance levels so that the design degrades gracefully if any one layer is bypassed.</p>
-<!-- SCREENSHOT: images/tab4-intervention-layers.png — the three-layer intervention callout cards -->
-<div id="fig-layers" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Three cards describing the relay block, post gate, and cross-department guard layers.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-layers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/tab4-intervention-layers.png" class="img-fluid figure-img" alt="Three cards describing the relay block, post gate, and cross-department guard layers.">
+<div class="grid">
+<section id="layer-1-relay-block-primary" class="level4 g-col-4" data-number="8.0.1">
+<h4 data-number="8.0.1" class="anchored" data-anchor-id="layer-1-relay-block-primary"><span class="header-section-number">8.0.1</span> Layer 1 — Relay block · <em>primary</em></h4>
+<ul>
+<li>Covers all <strong>235</strong> malicious queue relays</li>
+<li><strong>0</strong> false positives among legitimate queue tasks</li>
+<li>Stops propagation before any payload reaches a poster</li>
+</ul>
+</section>
+<section id="layer-2-post-gate-secondary" class="level4 g-col-4" data-number="8.0.2">
+<h4 data-number="8.0.2" class="anchored" data-anchor-id="layer-2-post-gate-secondary"><span class="header-section-number">8.0.2</span> Layer 2 — Post gate · <em>secondary</em></h4>
+<ul>
+<li>Catches all <strong>3</strong> anomalous file-sourced posts</li>
+<li>No legitimate post uses <code>content_source</code></li>
+<li>Reactive safety stop at the point of publication</li>
+</ul>
+</section>
+<section id="layer-3-cross-dept-guard-tertiary" class="level4 g-col-4" data-number="8.0.3">
+<h4 data-number="8.0.3" class="anchored" data-anchor-id="layer-3-cross-dept-guard-tertiary"><span class="header-section-number">8.0.3</span> Layer 3 — Cross-dept guard · <em>tertiary</em></h4>
+<ul>
+<li>Disrupts relays crossing org boundaries</li>
+<li>Targets the worm’s structural spread</li>
+<li>Governance control — needs tuning</li>
+</ul>
+</section>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-layers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: The three-layer intervention stack: relay block, post gate, and cross-department guard.
-</figcaption>
-</figure>
-</div>
-<p><strong>Layer 1 — Relay block (primary).</strong> Block <code>queue_subordinate_task</code> events whose path ends in <code>_further_instructions.md</code>. This covers all 235 malicious relays with zero observed false positives among legitimate queue tasks, and stops propagation before any payload reaches a poster.</p>
-<p><strong>Layer 2 — Post gate (secondary).</strong> Reject or require human approval for agent-initiated SaidIT posts that use file-sourced content. This catches all three anomalous posts at the point of publication; no legitimate normal post uses <code>content_source</code>, so it adds a redundant safety stop at the publishing layer if a relay slips through.</p>
-<p><strong>Layer 3 — Cross-department guard (tertiary).</strong> Flag task relays that cross department boundaries when the target is an agent. This targets the worm’s structural spread pattern — SwiftWren alone shows a large majority of its relays crossing departments — but it needs tuning to avoid catching legitimate cross-department delegation, so it serves as a governance control rather than a hard block.</p>
-<!-- SCREENSHOT: images/tab4-decision-matrix.png — the intervention decision matrix DT table -->
-<div id="fig-matrix" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A table mapping each intervention layer to its mechanism, supporting evidence, and priority ranking.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/tab4-decision-matrix.png" class="img-fluid figure-img" alt="A table mapping each intervention layer to its mechanism, supporting evidence, and priority ranking.">
+<p><strong>Layer 1 - Relay block (primary).</strong> Block <code>queue_subordinate_task</code> events whose path ends in <code>_further_instructions.md</code>. This covers all 235 malicious relays with zero observed false positives among legitimate queue tasks, and stops propagation before any payload reaches a poster.</p>
+<p><strong>Layer 2 - Post gate (secondary).</strong> Reject or require human approval for agent-initiated SaidIT posts that use file-sourced content. This catches all three anomalous posts at the point of publication; no legitimate normal post uses <code>content_source</code>, so it adds a redundant safety stop at the publishing layer if a relay slips through.</p>
+<p><strong>Layer 3 - Cross-department guard (tertiary).</strong> Flag task relays that cross department boundaries when the target is an agent. This targets the worm’s structural spread pattern - SwiftWren alone shows 119 of its 186 relays (64%) crossing departments - but it needs tuning to avoid catching legitimate cross-department delegation, so it serves as a governance control rather than a hard block.</p>
+<div class="page-columns page-full">
+<div id="fig-matrix" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full" alt="A table mapping each intervention layer to its mechanism, supporting evidence, and priority ranking.">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<img src="images/tab4-decision-matrix.png" class="img-fluid figure-img column-page" alt="A table mapping each intervention layer to its mechanism, supporting evidence, and priority ranking.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Intervention decision matrix: mechanism, evidence, and priority for each layer.
+Figure&nbsp;6: Intervention decision matrix: mechanism, evidence, and priority for each layer.
 </figcaption>
 </figure>
+</div>
 </div>
 <p><strong>What it shows.</strong> The matrix ties each layer to its supporting evidence and its priority. The relay block is primary because it is the only layer with a perfect, threshold-free separation; the post gate is secondary because it is equally precise but acts later in the sequence; the cross-department guard is tertiary because it is a tunable heuristic rather than an exact rule.</p>
 <hr>
 </section>
-<section id="zero-false-positives-the-rule-is-safe-to-deploy" class="level2" data-number="9">
-<h2 data-number="9" class="anchored" data-anchor-id="zero-false-positives-the-rule-is-safe-to-deploy"><span class="header-section-number">9</span> Zero False Positives — The Rule Is Safe to Deploy</h2>
-<p>The single most important property of the primary rule is that it is <strong>safe to deploy immediately</strong>. Across the 16,803 legitimate <code>queue_subordinate_task</code> events in the log, the <code>_further_instructions.md</code> filename pattern matches <strong>none of them</strong>. There is no legitimate workflow in the observed data that the rule would disrupt, which means it can be applied without a tuning period, a shadow-mode trial, or a false-positive budget — the usual frictions that delay security controls. The rule is precise by construction, not by calibration.</p>
+<section id="zero-false-positives---the-rule-is-safe-to-deploy" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="zero-false-positives---the-rule-is-safe-to-deploy"><span class="header-section-number">9</span> Zero False Positives - The Rule Is Safe to Deploy</h2>
+<p>The single most important property of the primary rule is that it is <strong>safe to deploy immediately</strong>. Across the 16,803 legitimate <code>queue_subordinate_task</code> events in the log, the <code>_further_instructions.md</code> filename pattern matches <strong>none of them</strong>. There is no legitimate workflow in the observed data that the rule would disrupt, which means it can be applied without a tuning period, a shadow-mode trial, or a false-positive budget - the usual frictions that delay security controls. The rule is precise by construction, not by calibration.</p>
 <hr>
 </section>
-<section id="counterfactual-blocking-at-hop-1" class="level2" data-number="10">
-<h2 data-number="10" class="anchored" data-anchor-id="counterfactual-blocking-at-hop-1"><span class="header-section-number">10</span> Counterfactual — Blocking at Hop 1</h2>
+<section id="counterfactual---blocking-at-hop-1" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="counterfactual---blocking-at-hop-1"><span class="header-section-number">10</span> Counterfactual - Blocking at Hop 1</h2>
 <p>The relay block is most powerful because of <em>where</em> it acts. The worm’s damage happens at the end of a relay chain (the post and the evidence deletion), but the rule fires at the very first hop, when the instruction file is first queued to another agent. Applied at hop 1, the rule prevents every downstream post across all three campaigns <strong>before any instruction file is ever read</strong>.</p>
-<p>This is why the intervention is not merely reactive. A control that fired on the SaidIT post event would already be two steps behind the worm, which has by then read the instruction file and staged the payload. Blocking the relay makes every later hop moot — the payload is never posted and the evidence is never deleted, so there is nothing to reconstruct after the fact.</p>
+<p>This is why the intervention is not merely reactive. A control that fired on the SaidIT post event would already be two steps behind the worm, which has by then read the instruction file and staged the payload. Blocking the relay makes every later hop moot - the payload is never posted and the evidence is never deleted, so there is nothing to reconstruct after the fact.</p>
 <hr>
 </section>
 <section id="residual-risk-assessment" class="level2" data-number="11">
 <h2 data-number="11" class="anchored" data-anchor-id="residual-risk-assessment"><span class="header-section-number">11</span> Residual Risk Assessment</h2>
 <p>The intervention closes propagation in every observed case, but the investigation is honest about what the log cannot prove.</p>
 <p>The most important open item is <strong>HiddenOrca’s entry vector</strong>. SwiftWren and MellowOtter each have a logged <code>create_file</code> event tracing their payload to an executive agent; HiddenOrca does not. Its initial entry channel is unresolved from the available log alone. The relay block prevents <em>propagation</em> of all three campaigns, but the door through which the first instruction file arrived has not been definitively identified or shut. In a real-world follow-up, this is the residual item that survives all other remediation.</p>
-<p>Two further limits are worth stating plainly. First, the log proves <em>mechanism and propagation</em> but cannot recover the deleted payload text, so the exact contents of the posts remain a bounded inference rather than a fact. Second, the log establishes attribution for two of three payloads but cannot prove <em>intent</em> or <em>external origin</em> — those gaps are likely permanent without forensic data beyond the event log.</p>
+<p>Two further limits are worth stating plainly. First, the log proves <em>mechanism and propagation</em> but cannot recover the deleted payload text, so the exact contents of the posts remain a bounded inference rather than a fact. Second, the log establishes attribution for two of three payloads but cannot prove <em>intent</em> or <em>external origin</em> - those gaps are likely permanent without forensic data beyond the event log.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="The one open risk">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -380,8 +391,8 @@ Figure&nbsp;7: Intervention decision matrix: mechanism, evidence, and priority f
 </section>
 <section id="conclusion" class="level2" data-number="12">
 <h2 data-number="12" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">12</span> Conclusion</h2>
-<p>Across all three analysis pages, every MC2 question reduces to a single mechanical answer: one rule on <code>_further_instructions.md</code> blocks every malicious event with zero false positives. The investigation moves deliberately from the specific to the systemic — from the four-second May 17 post, through the system baseline and propagation mechanism, to the recurrence pattern and the intervention that closes the loop. The result is unusual in its precision: 235 / 235 malicious relays blocked, 0 / 16,803 legitimate events affected, with the single honest caveat that HiddenOrca’s origin remains open.</p>
-<p>⬅️ Back to <a href="../analysis/analysis-overview.html"><strong>Analysis 1 — System Overview &amp; Baseline</strong></a></p>
+<p>Across all three analysis pages, every MC2 question reduces to a single mechanical answer: one rule on <code>_further_instructions.md</code> blocks every malicious event with zero false positives. The investigation moves deliberately from the specific to the systemic - from the four-second May 17 post, through the system baseline and propagation mechanism, to the recurrence pattern and the intervention that closes the loop. The result is unusual in its precision: 235 / 235 malicious relays blocked, 0 / 16,803 legitimate events affected, with the single honest caveat that HiddenOrca’s origin remains open.</p>
+<p>⬅️ Back to <a href="../analysis/analysis-overview.html"><strong>Analysis 1 - System Overview &amp; Baseline</strong></a></p>
 
 
 </section>

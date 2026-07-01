@@ -17,7 +17,7 @@ This is the final analysis page, answering MC2 Tasks 3a and 3b: **did this happe
 It builds directly on the [system baseline](analysis-overview.qmd) and the [attack-chain reconstruction](analysis-attack-chain.qmd). Visuals are taken from **Tab 3 (Campaign History)** and **Tab 4 (Intervention Design)** of the [Shiny dashboard](https://a-rosa.shinyapps.io/tenantthread-forensics/), where each is interactive.
 
 ::: {.callout-important title="Key findings at a glance"}
-- SwiftWren was the **third** campaign, following HiddenOrca (May 10) and MellowOtter (May 11) - a repeatable failure, not a glitch.
+- SwiftWren was the **third** campaign to post, following HiddenOrca (May 10) and MellowOtter (May 11) - a repeatable failure, not a glitch.
 - The three campaigns **differ in scale but not mechanism** - each uses the same instruction-file relay pattern before a file-sourced post.
 - Agents appearing across multiple campaigns mark the **structural** exposure points; the vulnerability is a property of the routing system, not of any one campaign.
 - A single relay-block rule covers **235 / 235** malicious relays with **0 / 16,803** false positives, and applied at hop 1 it prevents every post before any instruction file is read.
@@ -27,27 +27,21 @@ It builds directly on the [system baseline](analysis-overview.qmd) and the [atta
 
 ## Three Campaigns, Not One Incident
 
-<!-- SCREENSHOT: images/tab3-campaign-timeline.png - the campaign timeline (layered bars per campaign) -->
-
 ![Campaign timeline. HiddenOrca, MellowOtter, and SwiftWren each follow the same relay-then-post pattern.](images/tab3-campaign-timeline.png){#fig-timeline fig-alt="A timeline showing the observed windows of the three campaigns, with SwiftWren spanning the longest period."}
 
-**What it shows.** Each campaign follows the same shape - an instruction file, a propagated task, and a final file-sourced post. The May 17 SwiftWren post was the third in nine days, following HiddenOrca on May 10 and MellowOtter on May 11; neither earlier campaign triggered a logged incident-response action. SwiftWren is the most persistent of the three, spanning the longest window and touching the widest set of agents. The escalation from HiddenOrca to SwiftWren - growing relay counts, longer duration, more agents - reads as iterative refinement of the same worm rather than three unrelated events.
+**What it shows.** Each campaign follows the same shape - an instruction file, a propagated task, and a final file-sourced post. The May 17 SwiftWren post was the third in nine days, following HiddenOrca on May 10 and MellowOtter on May 11; neither earlier campaign triggered a logged incident-response action. SwiftWren is the most persistent of the three, spanning the longest window and touching the widest set of agents - it is the largest campaign on every axis, while MellowOtter was a smaller run between the two larger ones. What recurs is the mechanism, not a steady escalation: the same relay-then-post shape appears in all three, which reads as one worm reused rather than three unrelated events.
 
 ---
 
 ## Comparative Campaign Statistics
 
-<!-- SCREENSHOT: images/tab3-comparison-table.png - the campaign comparison DT table -->
-
 ![Comparative campaign statistics: relay count, duration, agents touched, and self-loops.](images/tab3-comparison-table.png){#fig-comparison fig-alt="A table comparing the three campaigns across relay count, first and last seen, duration, agents touched, and self-loops."}
 
-**What it shows.** The three campaigns differ in scale - relay counts, durations, and agent reach all increase toward SwiftWren - but the underlying mechanism is constant across all three. Each uses the same `_further_instructions.md` relay pattern ahead of a `content_source` post. This is the key structural fact for the intervention: because the mechanism never changes, a single rule targeting that mechanism covers every campaign at once, including any future campaign that reuses the pattern.
+**What it shows.** The three campaigns differ in scale - SwiftWren is the largest on every measure (relay count, duration, and agent reach), with MellowOtter the smallest and HiddenOrca in between - but the underlying mechanism is constant across all three. Each uses the same `_further_instructions.md` relay pattern ahead of a `content_source` post. This is the key structural fact for the intervention: because the mechanism never changes, a single rule targeting that mechanism covers every campaign at once, including any future campaign that reuses the pattern.
 
 ---
 
 ## Relay Velocity
-
-<!-- SCREENSHOT: images/tab3-velocity-density.png - the inter-hop interval density plot per campaign -->
 
 ![Relay velocity density by campaign. SwiftWren shows a more regular cadence.](images/tab3-velocity-density.png){#fig-velocity fig-alt="Density curves of inter-hop intervals for each campaign, with SwiftWren peaking at a regular interval."}
 
@@ -57,8 +51,6 @@ It builds directly on the [system baseline](analysis-overview.qmd) and the [atta
 
 ## Agent Overlap Across Campaigns
 
-<!-- SCREENSHOT: images/tab3-agent-overlap.png - the agent overlap bar chart coloured by campaigns touched -->
-
 ![Agents ranked by number of campaigns they appear in.](images/tab3-agent-overlap.png){#fig-overlap fig-alt="A horizontal bar chart of agents coloured by how many campaigns they participated in."}
 
 **What it shows.** Agents appearing in multiple campaigns are the most persistent exposure points. Their recurrence demonstrates that the vulnerability is **structural** - a property of the task-routing system that any campaign can exploit - rather than something specific to one instruction file or one set of agents. This reinforces the baseline finding that no single agent is load-bearing: the same routing affordances are available campaign after campaign.
@@ -66,8 +58,6 @@ It builds directly on the [system baseline](analysis-overview.qmd) and the [atta
 ---
 
 ## Relay Activity Calendar
-
-<!-- SCREENSHOT: images/tab3-relay-calendar.png - the day-by-hour calendar heatmap, faceted by campaign -->
 
 ![Relay activity calendar (day × hour) per campaign.](images/tab3-relay-calendar.png){#fig-calendar fig-alt="A calendar heatmap showing relay activity by date and hour for each campaign, with SwiftWren covering the broadest spread."}
 
@@ -87,19 +77,40 @@ The discriminating signal is the filename. The `_further_instructions.md` patter
 
 The findings converge on a layered defence. The primary layer is the single filename rule; the secondary and tertiary layers add redundant coverage at the posting and governance levels so that the design degrades gracefully if any one layer is bypassed.
 
-<!-- SCREENSHOT: images/tab4-intervention-layers.png - the three-layer intervention callout cards -->
+::: {.grid}
 
-![The three-layer intervention stack: relay block, post gate, and cross-department guard.](images/tab4-intervention-layers.png){#fig-layers fig-alt="Three cards describing the relay block, post gate, and cross-department guard layers."}
+::: {.g-col-4}
+#### Layer 1 — Relay block · *primary*
+- Covers all **235** malicious queue relays
+- **0** false positives among legitimate queue tasks
+- Stops propagation before any payload reaches a poster
+:::
+
+::: {.g-col-4}
+#### Layer 2 — Post gate · *secondary*
+- Catches all **3** anomalous file-sourced posts
+- No legitimate post uses `content_source`
+- Reactive safety stop at the point of publication
+:::
+
+::: {.g-col-4}
+#### Layer 3 — Cross-dept guard · *tertiary*
+- Disrupts relays crossing org boundaries
+- Targets the worm's structural spread
+- Governance control — needs tuning
+:::
+
+:::
 
 **Layer 1 - Relay block (primary).** Block `queue_subordinate_task` events whose path ends in `_further_instructions.md`. This covers all 235 malicious relays with zero observed false positives among legitimate queue tasks, and stops propagation before any payload reaches a poster.
 
 **Layer 2 - Post gate (secondary).** Reject or require human approval for agent-initiated SaidIT posts that use file-sourced content. This catches all three anomalous posts at the point of publication; no legitimate normal post uses `content_source`, so it adds a redundant safety stop at the publishing layer if a relay slips through.
 
-**Layer 3 - Cross-department guard (tertiary).** Flag task relays that cross department boundaries when the target is an agent. This targets the worm's structural spread pattern - SwiftWren alone shows a large majority of its relays crossing departments - but it needs tuning to avoid catching legitimate cross-department delegation, so it serves as a governance control rather than a hard block.
+**Layer 3 - Cross-department guard (tertiary).** Flag task relays that cross department boundaries when the target is an agent. This targets the worm's structural spread pattern - SwiftWren alone shows 119 of its 186 relays (64%) crossing departments - but it needs tuning to avoid catching legitimate cross-department delegation, so it serves as a governance control rather than a hard block.
 
-<!-- SCREENSHOT: images/tab4-decision-matrix.png - the intervention decision matrix DT table -->
-
+:::{.column-page}
 ![Intervention decision matrix: mechanism, evidence, and priority for each layer.](images/tab4-decision-matrix.png){#fig-matrix fig-alt="A table mapping each intervention layer to its mechanism, supporting evidence, and priority ranking."}
+:::
 
 **What it shows.** The matrix ties each layer to its supporting evidence and its priority. The relay block is primary because it is the only layer with a perfect, threshold-free separation; the post gate is secondary because it is equally precise but acts later in the sequence; the cross-department guard is tertiary because it is a tunable heuristic rather than an exact rule.
 
